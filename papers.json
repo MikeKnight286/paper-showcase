@@ -1,0 +1,327 @@
+[
+  {
+    "id": "1",
+    "title": "Attention Is All You Need",
+    "abstract": "The dominant sequence transduction models are based on complex recurrent or convolutional neural networks that include an encoder and a decoder. The best performing models also connect the encoder and decoder through an attention mechanism. We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely. Experiments on two machine translation tasks show these models to be superior in quality while being more parallelizable and requiring significantly less time to train.",
+    "link": "https://arxiv.org/abs/1706.03762",
+    "tags": [
+      "Architecture",
+      "NLP",
+      "Attention"
+    ],
+    "authors": [
+      "Ashish Vaswani",
+      "Noam Shazeer",
+      "Niki Parmar",
+      "Jakob Uszkoreit",
+      "Llion Jones",
+      "Aidan N. Gomez",
+      "Lukasz Kaiser",
+      "Illia Polosukhin"
+    ],
+    "year": 2017,
+    "venue": "NeurIPS"
+  },
+  {
+    "id": "2",
+    "title": "Auto-Encoding Variational Bayes",
+    "abstract": "How can we perform efficient inference and learning in directed probabilistic models, in the presence of continuous latent variables with intractable posterior distributions, and large datasets? We introduce a stochastic variational inference and learning algorithm that scales to large datasets and, under some mild differentiability conditions, even works in the intractable case. Our contributions are a reparameterization of the variational lower bound that yields a lower bound estimator that can be straightforwardly optimized using standard stochastic gradient methods.",
+    "link": "https://arxiv.org/abs/1312.6114",
+    "tags": [
+      "Generative Models",
+      "Bayesian Inference",
+      "Representation Learning"
+    ],
+    "authors": [
+      "Diederik P. Kingma",
+      "Max Welling"
+    ],
+    "year": 2014,
+    "venue": "ICLR"
+  },
+  {
+    "id": "3",
+    "title": "Deep Residual Learning for Image Recognition",
+    "abstract": "Deeper neural networks are more difficult to train. We present a residual learning framework to ease the training of networks that are substantially deeper than those used previously. We explicitly reformulate the layers as learning residual functions with reference to the layer inputs, instead of learning unreferenced functions. We provide comprehensive empirical evidence showing that these residual networks are easier to optimize, and can gain accuracy from considerably increased depth. On the ImageNet dataset we evaluate residual nets with a depth of up to 152 layers — 8x deeper than VGG nets but still having lower complexity.",
+    "link": "https://arxiv.org/abs/1512.03385",
+    "tags": [
+      "Deep Learning",
+      "Computer Vision",
+      "Architecture"
+    ],
+    "authors": [
+      "Kaiming He",
+      "Xiangyu Zhang",
+      "Shaoqing Ren",
+      "Jian Sun"
+    ],
+    "year": 2016,
+    "venue": "CVPR"
+  },
+  {
+    "id": "4",
+    "title": "Generative Adversarial Nets",
+    "abstract": "We propose a new framework for estimating generative models via an adversarial process, in which we simultaneously train two models: a generative model G that captures the data distribution, and a discriminative model D that estimates the probability that a sample came from the training data rather than G. The training procedure for G is to maximize the probability of D making a mistake. This framework corresponds to a minimax two-player game. In the space of arbitrary functions G and D, a unique solution exists, with G recovering the training data distribution and D equal to one half everywhere.",
+    "link": "https://arxiv.org/abs/1406.2661",
+    "tags": [
+      "Generative Models",
+      "Deep Learning",
+      "Optimization"
+    ],
+    "authors": [
+      "Ian Goodfellow",
+      "Jean Pouget-Abadie",
+      "Mehdi Mirza",
+      "Bing Xu",
+      "David Warde-Farley",
+      "Sherjil Ozair",
+      "Aaron Courville",
+      "Yoshua Bengio"
+    ],
+    "year": 2014,
+    "venue": "NeurIPS"
+  },
+  {
+    "id": "5",
+    "title": "Latent Dirichlet Allocation",
+    "abstract": "We describe latent Dirichlet allocation (LDA), a generative probabilistic model for collections of discrete data such as text corpora. LDA is a three-level hierarchical Bayesian model, in which each item of a collection is modeled as a finite mixture over an underlying set of topics. Each topic is, in turn, modeled as an infinite mixture over an underlying set of topic probabilities. In the context of text modeling, the topic probabilities provide an explicit representation of a document. We present efficient approximate inference techniques based on variational methods and an EM algorithm for empirical Bayes parameter estimation.",
+    "link": "https://arxiv.org/pdf/2405.00208",
+    "tags": [
+      "Topic Modeling",
+      "Bayesian Inference",
+      "NLP"
+    ],
+    "authors": [
+      "David M. Blei",
+      "Andrew Y. Ng",
+      "Michael I. Jordan"
+    ],
+    "year": 2003,
+    "venue": "Journal of Machine Learning Research"
+  },
+  {
+    "id": "6",
+    "title": "A Primer on the Inner Workings of Transformer-Based Language Models",
+    "abstract": "The rapid progress of research aimed at interpreting the inner workings of advanced language models has highlighted a need for contextualizing the insights gained from years of work in this area. This primer provides a concise technical introduction to the current techniques used to interpret the inner workings of Transformer-based language models, focusing on the generative decoder-only architecture. We conclude by presenting a comprehensive overview of the known internal mechanisms implemented by these models, uncovering connections across popular approaches and active research directions in this area.",
+    "link": "https://www.jmlr.org/papers/v3/blei03a.html",
+    "tags": [
+      "Interpretability",
+      "Language Models",
+      "Architecture"
+    ],
+    "authors": [
+      "Javier Ferrando",
+      "Gabriele Sarti",
+      "Arianna Bisazza",
+      "Marta R. Costa-jussà"
+    ],
+    "year": 2024,
+    "venue": "Preprint"
+  },
+  {
+    "id": "7",
+    "title": "On the Theoretical Limitations of Embedding-Based Retrieval",
+    "abstract": "Vector embeddings have been tasked with an ever-increasing set of retrieval tasks over the years, with a nascent rise in using them for reasoning, instruction-following, coding, and more. These new benchmarks push embeddings to work for any query and any notion of relevance that could be given. While prior works have pointed out theoretical limitations of vector embeddings, there is a common assumption that these difficulties are exclusively due to unrealistic queries, and those that are not can be overcome with better training data and larger models. In this work, we demonstrate that we may encounter these theoretical limitations in realistic settings with extremely simple queries. We connect known results in learning theory, showing that the number of top-k subsets of documents capable of being returned as the result of some query is limited by the dimension of the embedding. We empirically show that this holds true even if we directly optimize on the test set with free parameterized embeddings. We then create a realistic dataset called LIMIT that stress tests embedding models based on these theoretical results, and observe that even state-of-the-art models fail on this dataset despite the simple nature of the task. Our work shows the limits of embedding models under the existing single vector paradigm and calls for future research to develop new techniques that can resolve this fundamental limitation.",
+    "link": "https://arxiv.org/pdf/2508.21038",
+    "tags": [
+      "Embeddings",
+      "Information Retrieval",
+      "Representation Learning"
+    ],
+    "authors": [
+      "Orion Weller",
+      "Michael Boratko",
+      "Iftekhar Naim",
+      "Jinhyuk Lee"
+    ],
+    "year": 2026,
+    "venue": "ICLR"
+  },
+  {
+    "id": "8",
+    "title": "A Tutorial on Fisher Information",
+    "abstract": "In many statistical applications that concern mathematical psychologists, the concept of Fisher information plays an important role. In this tutorial we clarify the concept of Fisher information as it manifests itself across three different statistical paradigms. First, in the frequentist paradigm, Fisher information is used to construct hypothesis tests and confidence intervals using maximum likelihood estimators; second, in the Bayesian paradigm, Fisher information is used to define a default prior; finally, in the minimum description length paradigm, Fisher information is used to measure model complexity.",
+    "link": "https://www.sciencedirect.com/science/article/pii/S0022249617301396",
+    "tags": [
+      "Statistics",
+      "Bayesian Inference",
+      "Information Theory"
+    ],
+    "authors": [
+      "Alexander Ly",
+      "Maarten Marsman",
+      "Josine Verhagen",
+      "Raoul P.P.P. Grasman",
+      "Eric-Jan Wagenmakers"
+    ],
+    "year": 2017,
+    "venue": "Journal of Mathematical Psychology"
+  },
+  {
+    "id": "9",
+    "title": "The Platonic Representation Hypothesis",
+    "abstract": "We argue that representations in AI models, particularly deep networks, are converging. First, we survey many examples of convergence in the literature: over time and across multiple domains, the ways by which different neural networks represent data are becoming more aligned. Next, we demonstrate convergence across data modalities: as vision models and language models get larger, they measure distance between datapoints in a more and more alike way. We hypothesize that this convergence is driving toward a shared statistical model of reality, akin to Plato's concept of an ideal reality. We term such a representation the platonic representation and discuss several possible selective pressures toward it. Finally, we discuss the implications of these trends, their limitations, and counterexamples to our analysis.",
+    "link": "https://arxiv.org/pdf/2405.07987",
+    "tags": [
+      "Representation Learning",
+      "Multimodal",
+      "Deep Learning"
+    ],
+    "authors": [
+      "Minyoung Huh",
+      "Brian Cheung",
+      "Tongzhou Wang",
+      "Philip Isola"
+    ],
+    "year": 2024,
+    "venue": "Proceedings of the 41st International Conference on Machine Learning"
+  },
+  {
+    "id": "10",
+    "title": "Anisotropy is Inherent to Self-Attention in Transformers",
+    "abstract": "The representation degeneration problem is a phenomenon that is widely observed among self-supervised learning methods based on Transformers. In NLP, it takes the form of anisotropy, a singular property of hidden representations which makes them unexpectedly close to each other in terms of angular distance (cosine-similarity). Some recent works tend to show that anisotropy is a consequence of optimizing the cross-entropy loss on long-tailed distributions of tokens. We show in this paper that anisotropy can also be observed empirically in language models with specific objectives that should not suffer directly from the same consequences. We also show that the anisotropy problem extends to Transformers trained on other modalities. Our observations suggest that anisotropy is actually inherent to Transformers-based models.",
+    "link": "https://aclanthology.org/2024.eacl-long.3.pdf",
+    "tags": [
+      "Representation Learning",
+      "Attention",
+      "NLP"
+    ],
+    "authors": [
+      "Nathan Godey",
+      "Éric de la Clergerie",
+      "Benoît Sagot"
+    ],
+    "year": 2024,
+    "venue": "Proceedings of the 18th Conference of the European Chapter of the Association for Computational Linguistics"
+  },
+  {
+    "id": "11",
+    "title": "Local Similarity and Global Variability Characterize the Semantic Space of Human Languages",
+    "abstract": "The degree to which meanings align across the world's languages suggests the limits of translation and cross-cultural communication. Approaching this question demands a systems-level view to compare the structure of meanings across many languages. Using machine learning we construct word embeddings—dense, continuous, high-dimensional spaces that characterize word meanings from context—across large samples of multi-lingual text. With these representations, we find that 1) meanings across languages are similar within semantic domains and variable across them and that 2) concrete meanings are less variable across languages than abstract ones, but all vary with distance. This suggests that associations and analogies, which interlink meanings within language, propose predictably different intuitions across distinct languages and confound the transmission of complex ideas.",
+    "link": "https://www.pnas.org/doi/10.1073/pnas.2300986120",
+    "tags": [
+      "Semantics",
+      "Embeddings",
+      "NLP",
+      "Linguistics"
+    ],
+    "authors": [
+      "Molly Lewis",
+      "Aoife Cahill",
+      "Nitin Madnani",
+      "James Evans"
+    ],
+    "year": 2023,
+    "venue": "Proceedings of the National Academy of Sciences, 120(51)"
+  },
+  {
+    "id": "12",
+    "title": "Distributional Models of Word Meaning",
+    "abstract": "Distributional semantics is a usage-based model of meaning, based on the assumption that the statistical distribution of linguistic items in context plays a key role in characterizing their semantic behavior. Distributional models build semantic representations by extracting co-occurrences from corpora and have become a mainstream research paradigm in computational linguistics. In this review, I present the state of the art in distributional semantics, focusing on its assets and limits as a model of meaning and as a method for semantic analysis. I discuss the main theoretical issues raised by distributional semantics, such as compositionality, grounding, and polysemy, and I survey the main methodological choices in the design of distributional models, including context types, weighting schemes, and dimensionality reduction methods.",
+    "link": "https://www.annualreviews.org/content/journals/10.1146/annurev-linguistics-030514-125254",
+    "tags": [
+      "Semantics",
+      "Embeddings",
+      "NLP",
+      "Linguistics"
+    ],
+    "authors": [
+      "Alessandro Lenci"
+    ],
+    "year": 2018,
+    "venue": "Annual Review of Linguistics, 4:151–171"
+  },
+  {
+    "id": "13",
+    "title": "Is Cosine-Similarity of Embeddings Really About Similarity?",
+    "abstract": "Cosine-similarity is the cosine of the angle between two vectors, or equivalently the dot product between their normalizations. A popular application is to quantify semantic similarity between high-dimensional objects by applying cosine-similarity to a learned low-dimensional feature embedding. This can work better but sometimes also worse than the unnormalized dot-product between embedded vectors in practice. To gain insight into this empirical observation, we study embeddings derived from regularized linear models, where closed-form solutions facilitate analytical insights. We derive analytically how cosine-similarity can yield arbitrary and therefore meaningless 'similarities.' For some linear models the similarities are not even unique, while for others they are implicitly controlled by the regularization. We discuss implications beyond linear models: a combination of different regularizations are employed when learning deep models; these have implicit and unintended effects when taking cosine-similarities of the resulting embeddings, rendering results opaque and possibly arbitrary. Based on these insights, we caution against blindly using cosine-similarity and outline alternatives.",
+    "link": "https://arxiv.org/abs/2403.05440",
+    "tags": [
+      "Embeddings",
+      "Semantics",
+      "Representation Learning"
+    ],
+    "authors": [
+      "Harald Steck",
+      "Chaitanya Ekanadham",
+      "Nathan Kallus"
+    ],
+    "year": 2024,
+    "venue": "Companion Proceedings of the ACM Web Conference 2024 (WWW '24 Companion)"
+  },
+  {
+    "id": "14",
+    "title": "On the Various Semantics of Similarity in Word Embedding Models",
+    "abstract": "Word embedding models such as Word2Vec and GloVe represent words as dense vectors and use cosine similarity to compare them. Despite the widespread adoption of these models, the notion of similarity they express has remained underexplored and ambiguous. In this paper, we study the statistical distribution of similarity values in word embedding models systematically and ask when similarity values are actually meaningful. We examine how this distribution varies across model algorithms and parameter settings, show that intuitive similarity thresholds do not exist in general, and propose a data-driven method for identifying which similarity values and thresholds are meaningful for a given model. We further evaluate how applying these thresholds changes model performance on standard similarity benchmarks, yielding important insights for the design and evaluation of future embedding models.",
+    "link": "https://doi.org/10.1109/JCDL.2017.7991568",
+    "tags": [
+      "Embeddings",
+      "Semantics",
+      "NLP"
+    ],
+    "authors": [
+      "Ábel Elekes",
+      "Martin Schäler",
+      "Klemens Böhm"
+    ],
+    "year": 2017,
+    "venue": "Proceedings of the 2017 ACM/IEEE Joint Conference on Digital Libraries (JCDL 2017)"
+  },
+  {
+    "id": "15",
+    "title": "Toward Meaningful Notions of Similarity in NLP Embedding Models",
+    "abstract": "Finding similar words with the help of word embedding models, such as Word2Vec or GloVe, computed on large-scale digital libraries has yielded meaningful results in many cases. However, the underlying notion of similarity has remained ambiguous. In this paper, we examine when exactly similarity values in word embedding models are meaningful. To do so, we analyze the statistical distribution of similarity values systematically, conducting two series of experiments. The first examines how the distribution of similarity values depends on different embedding model algorithms and parameters. The second shows that intuitive similarity thresholds do not exist and proposes a method for identifying which similarity values and thresholds are actually meaningful for a given embedding model. Based on these results, we calculate how these thresholds, when taken into account during evaluation, change the evaluation scores of the models on standard similarity test sets.",
+    "link": "https://link.springer.com/article/10.1007/s00799-018-0237-y",
+    "tags": [
+      "Embeddings",
+      "Semantics",
+      "NLP"
+    ],
+    "authors": [
+      "Ábel Elekes",
+      "Adrian Englhardt",
+      "Martin Schäler",
+      "Klemens Böhm"
+    ],
+    "year": 2020,
+    "venue": "International Journal on Digital Libraries, 21(2): 109–128"
+  },
+  {
+    "id": "16",
+    "title": "Tell, Don't Show: Leveraging Language Models' Abstractive Retellings to Model Literary Themes",
+    "abstract": "Conventional bag-of-words approaches for topic modeling, like latent Dirichlet allocation (LDA), struggle with literary text. Literature challenges lexical methods because narrative language focuses on immersive sensory details instead of abstractive description or exposition: writers are advised to 'show, don't tell.' We propose Retell, a simple, accessible topic modeling approach for literature. Here, we prompt resource-efficient, generative language models (LMs) to tell what passages show, thereby translating narratives' surface forms into higher-level concepts and themes. By running LDA on LMs' retellings of passages, we can obtain more precise and informative topics than by running LDA alone or by directly asking LMs to list topics. To investigate the potential of our method for cultural analytics, we compare our method's outputs to expert-guided annotations in a case study on racial/cultural identity in high school English language arts books.",
+    "link": "https://aclanthology.org/2025.findings-acl.1162/",
+    "tags": [
+      "Topic Modeling",
+      "Language Models",
+      "NLP"
+    ],
+    "authors": [
+      "Li Lucy",
+      "Camilla Griffiths",
+      "Sarah Levine",
+      "Jennifer L. Eberhardt",
+      "Dorottya Demszky",
+      "David Bamman"
+    ],
+    "year": 2025,
+    "venue": "Findings of the Association for Computational Linguistics: ACL 2025"
+  },
+  {
+    "title": "Tackling topic general words in topic modeling",
+    "abstract": "Topic models are a prevailing tool for exploring latent topics in documents, and for helping to complete many NLP tasks. To obtain good topics for a corpus, a preprocessing step is often needed to remove common stop words and identify topic general words (TGW) from the corpus. Such words can seriously harm the topic formation because they create spurious co-occurrence of unrelated words. Also, they are likely to occupy top positions of multiple topics, lead to many unrelated words being grouped under a topic, and consequently result in inscrutable and similar topics. In an application, one typically manually identifies and removes a list of TGWs in the corpus. This is a time consuming process and very hard to do by a layman user. In this paper, we aim to solve this problem automatically. The proposed approaches can be based on the current corpus alone or multiple corpora. In the latter case, a novel continuous learning method is proposed that learns from past results of multiple domain corpora to help identify TGWs in the current domain. We conduct experiments in two real-world datasets, and the experimental results show that the proposed approaches achieve superior results.",
+    "link": "https://www.sciencedirect.com/science/article/pii/S0952197617300738",
+    "tags": [
+      "NLP",
+      "Topic Modeling"
+    ],
+    "authors": [
+      "Yueshen Xu",
+      "Yuyu Yin",
+      "Jianwei Yin"
+    ],
+    "year": 2017,
+    "venue": "Engineering Applications of Artificial Intelligence",
+    "id": "1776926561515"
+  }
+]
