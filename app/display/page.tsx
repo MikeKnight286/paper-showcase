@@ -14,9 +14,10 @@ interface Paper {
   venue: string;
 }
 
-const WIFI_NAME = process.env.NEXT_PUBLIC_WIFI_NAME || "LabNet";
+const WIFI_NAME = process.env.NEXT_PUBLIC_WIFI_NAME || "GI";
+const HOST_IP = process.env.NEXT_HOST_IP || "host-ip";
 const DASHBOARD_PORT = process.env.NEXT_PUBLIC_DASHBOARD_PORT || "3000";
-const ROTATE_MS = parseInt(process.env.NEXT_PUBLIC_ROTATE_MS || "20000");
+const ROTATE_MS = parseInt(process.env.NEXT_PUBLIC_ROTATE_MS || "15000");
 
 const mono: React.CSSProperties = { fontFamily: "'DM Mono', monospace" };
 const serif: React.CSSProperties = { fontFamily: "'Source Serif 4', serif" };
@@ -191,7 +192,7 @@ export default function DisplayPage() {
       <div style={{ textAlign: "center", padding: "0.75rem 2rem", borderTop: "1px solid rgba(200,16,46,0.13)" }}>
         <p style={{ ...mono, fontSize: "0.72rem", color: "#555", letterSpacing: "0.06em" }}>
           Connect to <span style={{ color: "#c8102e", fontWeight: 500 }}>{WIFI_NAME}</span> Wi-Fi and open{" "}
-          <span style={{ color: "#c8102e", fontWeight: 500 }}>http://&lt;host-ip&gt;:{DASHBOARD_PORT}/dashboard</span>{" "}
+          <span style={{ color: "#c8102e", fontWeight: 500 }}>http://{HOST_IP}:{DASHBOARD_PORT}</span>{" "}
           on your device to access the paper dashboard
         </p>
       </div>
