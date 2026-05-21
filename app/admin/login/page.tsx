@@ -85,7 +85,7 @@ export default function AdminLoginPage() {
                 onBlur={() => setFocused(false)}
                 style={{
                   ...inputStyle,
-                  ...(focused ? { borderColor: "#c8102e", boxShadow: "0 0 0 2px rgba(200,16,46,0.1)" } : {}),
+                  ...(focused ? { border: "#c8102e", boxShadow: "0 0 0 2px rgba(200,16,46,0.1)" } : {}),
                 }}
               />
             </div>
