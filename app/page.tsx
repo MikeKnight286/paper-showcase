@@ -218,7 +218,7 @@ export default function DisplayPage() {
                 gap: "1rem",
                 padding: "2rem 1.5rem",
               }}>
-                <span style={{ ...mono, fontSize: "0.58rem", letterSpacing: "0.28em", textTransform: "uppercase", color: "#888" }}>
+                <span style={{ ...mono, fontSize: "0.58rem", letterSpacing: "0.28em", textTransform: "uppercase", color: "#111" }}>
                   read paper
                 </span>
 
@@ -233,7 +233,7 @@ export default function DisplayPage() {
                   )}
                 </div>
 
-                <p style={{ ...mono, fontSize: "0.58rem", color: "#aaa", textAlign: "center", lineHeight: 1.7, maxWidth: "140px" }}>
+                <p style={{ ...mono, fontSize: "0.58rem", color: "#666", textAlign: "center", lineHeight: 1.7, maxWidth: "140px" }}>
                   Scan to open the full paper
                 </p>
               </div>
@@ -259,7 +259,7 @@ export default function DisplayPage() {
                   gap: "0.4rem",
                   flex: "0 0 auto",
                 }}>
-                  <span style={{ ...mono, fontSize: "0.58rem", letterSpacing: "0.28em", textTransform: "uppercase", color: "#888" }}>
+                  <span style={{ ...mono, fontSize: "0.58rem", letterSpacing: "0.28em", textTransform: "uppercase", color: "#111" }}>
                     browse library
                   </span>
                   <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", marginTop: "0.15rem" }}>
@@ -290,7 +290,7 @@ export default function DisplayPage() {
                     <CornerBrackets color="rgba(200,16,46,0.5)" size={11} gap={2} />
                     <QRImg url={dashboardUrl} size={116} dark="#2a2a2a" />
                   </div>
-                  <p style={{ ...mono, fontSize: "0.56rem", color: "#aaa", textAlign: "center", lineHeight: 1.7, maxWidth: "140px" }}>
+                  <p style={{ ...mono, fontSize: "0.56rem", color: "#666", textAlign: "center", lineHeight: 1.7, maxWidth: "140px" }}>
                     Scan to open the paper library on your device
                   </p>
                 </div>
@@ -304,7 +304,7 @@ export default function DisplayPage() {
                   alignItems: "center",
                   justifyContent: "center",
                 }}>
-                  <span style={{ ...mono, fontSize: "0.52rem", color: "#bbb", letterSpacing: "0.04em", textAlign: "center", wordBreak: "break-all" }}>
+                  <span style={{ ...mono, fontSize: "0.52rem", color: "#666", letterSpacing: "0.04em", textAlign: "center", wordBreak: "break-all" }}>
                     {dashboardUrl}
                   </span>
                 </div>
@@ -312,7 +312,7 @@ export default function DisplayPage() {
 
             </div>
           ) : (
-            <div style={{ textAlign: "center", ...mono, fontSize: "0.8rem", color: "#aaa" }}>Loading papers…</div>
+            <div style={{ textAlign: "center", ...mono, fontSize: "0.8rem", color: "#666" }}>Loading papers…</div>
           )}
         </div>
       </main>
@@ -329,7 +329,7 @@ export default function DisplayPage() {
             <button key={i} onClick={() => goTo(i)} style={{ width: "6px", height: "6px", borderRadius: "50%", background: i === current ? "#c8102e" : "#ddd", border: `1px solid ${i === current ? "#c8102e" : "#ccc"}`, transform: i === current ? "scale(1.35)" : "scale(1)", transition: "all 0.3s", cursor: "pointer", padding: 0 }} />
           ))}
         </div>
-        <span style={{ ...mono, fontSize: "0.6rem", color: "#aaa", letterSpacing: "0.1em" }}>
+        <span style={{ ...mono, fontSize: "0.6rem", color: "#666", letterSpacing: "0.1em" }}>
           {paused ? "paused" : `auto · ${ROTATE_MS / 1000}s`}
         </span>
       </footer>
