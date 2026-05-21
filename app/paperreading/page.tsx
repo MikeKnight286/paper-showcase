@@ -110,7 +110,7 @@ function UploadPanel({ myToken, onSuccess }: { myToken: string; onSuccess: () =>
         Submit a paper for discussion
       </p>
       <p style={{ ...serif, fontSize: "0.85rem", color: "#666", lineHeight: 1.6, marginBottom: "1rem" }}>
-        Upload a PDF and it will appear in the queue below. Everyone in the network can view it. An admin decides whether it gets added to the main library.
+        Upload a PDF and it will appear in the queue below.
       </p>
       <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap" }}>
         <label style={{ ...mono, fontSize: "0.6rem", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 500, padding: "0.4rem 1rem", borderRadius: "2px", cursor: "pointer", border: "1px solid rgba(200,16,46,0.3)", background: file ? "#fdedf0" : "#fff", color: file ? "#c8102e" : "#555", display: "inline-flex", alignItems: "center", gap: "0.5rem" }}>
