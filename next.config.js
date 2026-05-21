@@ -3,7 +3,7 @@ const nextConfig = {
   serverExternalPackages: ['file-type'],
   turbopack: {},
 
-  allowedDevOrigins: ['']
+  allowedDevOrigins: ['10.0.226.63']
 };
 
 module.exports = nextConfig;
