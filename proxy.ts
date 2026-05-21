@@ -5,10 +5,9 @@ export function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   if (pathname.startsWith('/admin') && !pathname.startsWith('/admin/login')) {
-    const ip =
-      req.headers.get('x-forwarded-for')?.split(',')[0].trim() ??
-      req.ip ??
-      '';
+    // req.ip was removed in Next.js 16 — use x-forwarded-for only
+    const forwarded = req.headers.get('x-forwarded-for') ?? '';
+    const ip = forwarded.split(',')[0].trim();
 
     const fromLocalhost =
       ip === '' ||

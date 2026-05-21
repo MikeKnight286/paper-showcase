@@ -12,7 +12,9 @@ const inputStyle: React.CSSProperties = {
   padding: "0.45rem 0.75rem",
   fontSize: "0.75rem",
   letterSpacing: "0.03em",
-  border: "1px solid rgba(200,16,46,0.25)",
+  borderWidth: "1px",
+  borderStyle: "solid",
+  borderColor: "rgba(200,16,46,0.25)",
   borderRadius: "2px",
   background: "#fff",
   color: "#111",
@@ -85,7 +87,7 @@ export default function AdminLoginPage() {
                 onBlur={() => setFocused(false)}
                 style={{
                   ...inputStyle,
-                  ...(focused ? { border: "#c8102e", boxShadow: "0 0 0 2px rgba(200,16,46,0.1)" } : {}),
+                  ...(focused ? { borderColor: "#c8102e", boxShadow: "0 0 0 2px rgba(200,16,46,0.1)" } : {}),
                 }}
               />
             </div>
