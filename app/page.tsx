@@ -199,8 +199,8 @@ export default function DisplayPage() {
                   {/* Step 1 */}
                   <div style={{ textAlign: "center", width: "100%" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", justifyContent: "center", marginBottom: "0.4rem" }}>
-                      <span style={{ ...mono, fontSize: "0.58rem", letterSpacing: "0.18em", textTransform: "uppercase", color: "#c8102e", fontWeight: 700 }}>1.</span>
-                      <span style={{ ...mono, fontSize: "0.65rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "#000", fontWeight: 600 }}>Connect to Wi-Fi</span>
+                      <span style={{ ...mono, fontSize: "0.78rem", letterSpacing: "0.18em", textTransform: "uppercase", color: "#c8102e", fontWeight: 700 }}>1.</span>
+                      <span style={{ ...mono, fontSize: "0.85rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "#000", fontWeight: 600 }}>Connect to Wi-Fi</span>
                     </div>
                     <div style={{ display: "inline-flex", alignItems: "center", gap: "0.4rem", background: "#fff", border: "1px solid rgba(200,16,46,0.25)", borderRadius: "2px", padding: "0.28rem 0.7rem" }}>
                       <svg width="13" height="10" viewBox="0 0 13 10" fill="none" stroke="#c8102e" strokeWidth="1.3" strokeLinecap="round">
@@ -214,15 +214,15 @@ export default function DisplayPage() {
                   {/* Step 2 */}
                   <div style={{ textAlign: "center", width: "100%", display: "flex", flexDirection: "column", alignItems: "center", gap: "0.55rem" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", justifyContent: "center" }}>
-                      <span style={{ ...mono, fontSize: "0.58rem", letterSpacing: "0.18em", textTransform: "uppercase", color: "#c8102e", fontWeight: 700 }}>2.</span>
-                      <span style={{ ...mono, fontSize: "0.65rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "#000", fontWeight: 600 }}>Scan QR</span>
+                      <span style={{ ...mono, fontSize: "0.78rem", letterSpacing: "0.18em", textTransform: "uppercase", color: "#c8102e", fontWeight: 700 }}>2.</span>
+                      <span style={{ ...mono, fontSize: "0.85rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "#000", fontWeight: 600 }}>Scan QR</span>
                     </div>
                     <div style={{ position: "relative", padding: "10px", background: "#fff", border: "1px solid rgba(200,16,46,0.25)", borderRadius: "2px", boxShadow: "0 2px 10px rgba(200,16,46,0.08)", alignSelf: "center" }}>
                       <CornerBrackets color="#c8102e" size={12} gap={3} />
                       <QRImg url={dashboardUrl} size={148} dark="#111111" />
                     </div>
-                    <span style={{ ...mono, fontSize: "0.65rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "#000", fontWeight: 600 }}>Or open</span>
-                    <p style={{ ...mono, fontSize: "0.6rem", color: "#000", textAlign: "center", lineHeight: 1.6, wordBreak: "break-all", maxWidth: "170px", fontWeight: 500 }}>{dashboardUrl}</p>
+                    <span style={{ ...mono, fontSize: "0.85rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "#000", fontWeight: 600 }}>Or open</span>
+                    <p style={{ ...mono, fontSize: "0.9rem", color: "#000", textAlign: "center", lineHeight: 1.6, wordBreak: "break-all", maxWidth: "170px", fontWeight: 500 }}>{dashboardUrl}</p>
                   </div>
                 </div>
 
