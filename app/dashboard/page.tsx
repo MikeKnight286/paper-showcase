@@ -196,6 +196,8 @@ export default function DashboardPage() {
   useEffect(() => {
     fetch("/api/papers").then((r) => r.json()).then(setPapers);
     fetch("/api/upload").then((r) => r.json()).then((d: unknown[]) => setPendingCount(Array.isArray(d) ? d.length : 0)).catch(() => {});
+    // Count each dashboard load as a visit
+    fetch("/api/stats?visit=1").catch(() => {});
   }, []);
 
   const allTags = useMemo(() => {

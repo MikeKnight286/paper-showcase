@@ -71,17 +71,17 @@ export default function DisplayPage() {
   const startRef = useRef<number>(0);
 
   // Fetch all data — called on mount and on every refresh interval
-  function fetchData(isFirstLoad = false) {
+  function fetchData(_isFirstLoad = false) {
     fetch("/api/papers").then(r => r.json()).then(setPapers).catch(() => {});
     fetch("/api/upload").then(r => r.json()).then((d: unknown[]) => setPending(Array.isArray(d) ? d.length : 0)).catch(() => {});
     fetch("/api/lan-ip").then(r => r.json()).then((d) => { if (d.ip) setLanIp(d.ip); }).catch(() => {});
-    // Only count a visit on the first load, not on subsequent refreshes
-    const statsUrl = isFirstLoad ? "/api/stats?visit=1" : "/api/stats";
+    // Carousel never increments visit count — dashboard does that
+    const statsUrl = "/api/stats";
     fetch(statsUrl).then(r => r.json()).then(setStats).catch(() => {});
   }
 
   useEffect(() => {
-    fetchData(true);
+    fetchData(false);
     const interval = setInterval(() => fetchData(false), REFRESH_MS);
     return () => clearInterval(interval);
   }, []);
@@ -177,9 +177,13 @@ export default function DisplayPage() {
                   <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#c8102e", flexShrink: 0 }} />
                   <div style={{ flex: 1, height: "1px", background: "rgba(200,16,46,0.3)", opacity: 0.5 }} />
                 </div>
-                <p style={{ ...serif, fontSize: "1.02rem", lineHeight: 1.85, color: "#1a1a1a", fontWeight: 400, maxWidth: "520px", flex: 1, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 6, WebkitBoxOrient: "vertical" as const }}>
-                  {paper.abstract}
-                </p>
+                <div style={{ position: "relative", maxWidth: "520px", flex: 1, overflow: "hidden" }}>
+                  <p style={{ ...serif, fontSize: "1.02rem", lineHeight: 1.85, color: "#1a1a1a", fontWeight: 400, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 6, WebkitBoxOrient: "vertical" as const }}>
+                    {paper.abstract}
+                  </p>
+                  {/* Fade mask — prevents hard mid-line cutoff */}
+                  <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "2.8rem", background: "linear-gradient(to bottom, transparent, #ffffff)" }} />
+                </div>
                 {paper.tags?.length > 0 && (
                   <div style={{ display: "flex", flexWrap: "wrap", gap: "0.45rem", justifyContent: "center", width: "100%", marginTop: "1.25rem", paddingTop: "1.1rem" }}>
                     {paper.tags.map(t => (
