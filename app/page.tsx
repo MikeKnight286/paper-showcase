@@ -52,7 +52,7 @@ function CornerBrackets({ color = "#c8102e", size = 14, gap = 3 }: { color?: str
 function StatRow({ value, label }: { value: string | number; label: string }) {
   return (
     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: "0.5rem", padding: "0.4rem 0", borderBottom: "1px solid rgba(200,16,46,0.07)" }}>
-      <span style={{ ...mono, fontSize: "0.6rem", color: "#999", letterSpacing: "0.1em", textTransform: "uppercase" }}>{label}</span>
+      <span style={{ ...mono, fontSize: "0.6rem", color: "#000", letterSpacing: "0.1em", textTransform: "uppercase" }}>{label}</span>
       <span style={{ ...mono, fontSize: "0.88rem", fontWeight: 700, color: "#c8102e" }}>{value}</span>
     </div>
   );
@@ -178,7 +178,7 @@ export default function DisplayPage() {
                   <div style={{ flex: 1, height: "1px", background: "rgba(200,16,46,0.3)", opacity: 0.5 }} />
                 </div>
                 <div style={{ position: "relative", maxWidth: "520px", flex: 1, overflow: "hidden" }}>
-                  <p style={{ ...serif, fontSize: "1.02rem", lineHeight: 1.85, color: "#1a1a1a", fontWeight: 400, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 6, WebkitBoxOrient: "vertical" as const }}>
+                  <p style={{ ...serif, fontSize: "1.02rem", lineHeight: 1.85, color: "#1a1a1a", fontWeight: 400, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 9, WebkitBoxOrient: "vertical" as const }}>
                     {paper.abstract}
                   </p>
                   {/* Fade mask — prevents hard mid-line cutoff */}
@@ -196,8 +196,12 @@ export default function DisplayPage() {
               {/* Right column: WiFi + QR + stats only (no most read here) */}
               <div style={{ background: "#fdf5f5", display: "flex", flexDirection: "column", alignItems: "stretch" }}>
                 <div style={{ padding: "1.5rem 1.25rem 1.25rem", display: "flex", flexDirection: "column", alignItems: "center", gap: "0.9rem", borderBottom: "1px solid rgba(200,16,46,0.1)" }}>
-                  <div style={{ textAlign: "center" }}>
-                    <p style={{ ...mono, fontSize: "0.68rem", letterSpacing: "0.12em", textTransform: "uppercase", color: "#555", fontWeight: 500, marginBottom: "0.3rem" }}>Connect to Wi-Fi</p>
+                  {/* Step 1 */}
+                  <div style={{ textAlign: "center", width: "100%" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", justifyContent: "center", marginBottom: "0.4rem" }}>
+                      <span style={{ ...mono, fontSize: "0.58rem", letterSpacing: "0.18em", textTransform: "uppercase", color: "#c8102e", fontWeight: 700 }}>1.</span>
+                      <span style={{ ...mono, fontSize: "0.65rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "#000", fontWeight: 600 }}>Connect to Wi-Fi</span>
+                    </div>
                     <div style={{ display: "inline-flex", alignItems: "center", gap: "0.4rem", background: "#fff", border: "1px solid rgba(200,16,46,0.25)", borderRadius: "2px", padding: "0.28rem 0.7rem" }}>
                       <svg width="13" height="10" viewBox="0 0 13 10" fill="none" stroke="#c8102e" strokeWidth="1.3" strokeLinecap="round">
                         <path d="M1 3.5C3 1.2 6.5 0 12 3.5" opacity="0.25"/><path d="M2.5 5.2C4 3.3 6.5 2.4 10.5 5.2" opacity="0.55"/><path d="M4.5 7C5.5 5.9 6.5 5.5 8.5 7"/>
@@ -205,17 +209,25 @@ export default function DisplayPage() {
                       </svg>
                       <span style={{ ...mono, fontSize: "0.75rem", color: "#c8102e", fontWeight: 700, letterSpacing: "0.08em" }}>{WIFI_NAME}</span>
                     </div>
-                    <p style={{ ...mono, fontSize: "0.62rem", color: "#888", marginTop: "0.35rem", letterSpacing: "0.06em" }}>then scan to browse</p>
                   </div>
-                  <div style={{ position: "relative", padding: "10px", background: "#fff", border: "1px solid rgba(200,16,46,0.25)", borderRadius: "2px", boxShadow: "0 2px 10px rgba(200,16,46,0.08)" }}>
-                    <CornerBrackets color="#c8102e" size={12} gap={3} />
-                    <QRImg url={dashboardUrl} size={140} dark="#111111" />
+
+                  {/* Step 2 */}
+                  <div style={{ textAlign: "center", width: "100%", display: "flex", flexDirection: "column", alignItems: "center", gap: "0.55rem" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", justifyContent: "center" }}>
+                      <span style={{ ...mono, fontSize: "0.58rem", letterSpacing: "0.18em", textTransform: "uppercase", color: "#c8102e", fontWeight: 700 }}>2.</span>
+                      <span style={{ ...mono, fontSize: "0.65rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "#000", fontWeight: 600 }}>Scan QR</span>
+                    </div>
+                    <div style={{ position: "relative", padding: "10px", background: "#fff", border: "1px solid rgba(200,16,46,0.25)", borderRadius: "2px", boxShadow: "0 2px 10px rgba(200,16,46,0.08)", alignSelf: "center" }}>
+                      <CornerBrackets color="#c8102e" size={12} gap={3} />
+                      <QRImg url={dashboardUrl} size={148} dark="#111111" />
+                    </div>
+                    <span style={{ ...mono, fontSize: "0.65rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "#000", fontWeight: 600 }}>Or open</span>
+                    <p style={{ ...mono, fontSize: "0.6rem", color: "#000", textAlign: "center", lineHeight: 1.6, wordBreak: "break-all", maxWidth: "170px", fontWeight: 500 }}>{dashboardUrl}</p>
                   </div>
-                  <p style={{ ...mono, fontSize: "0.58rem", color: "#aaa", textAlign: "center", lineHeight: 1.6, wordBreak: "break-all", maxWidth: "180px" }}>{dashboardUrl}</p>
                 </div>
 
                 <div style={{ flex: 1, padding: "1rem 1.25rem", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                  <p style={{ ...mono, fontSize: "0.55rem", letterSpacing: "0.22em", textTransform: "uppercase", color: "#bbb", marginBottom: "0.5rem", fontWeight: 500 }}>Library stats</p>
+                  <p style={{ ...mono, fontSize: "0.55rem", letterSpacing: "0.22em", textTransform: "uppercase", color: "#000", marginBottom: "0.5rem", fontWeight: 600 }}>Library stats</p>
                   <StatRow value={stats?.visits ?? "—"} label="Total visits" />
                   <StatRow value={stats?.total ?? papers.length} label="Papers" />
                   <StatRow value={stats?.thisMonth ?? "—"} label="Added this month" />
@@ -244,7 +256,7 @@ export default function DisplayPage() {
             {stats.mostRead.authors && stats.mostRead.authors.length > 0 && (
               <>
                 <div style={{ width: "1px", height: "12px", background: "rgba(200,16,46,0.15)", flexShrink: 0 }} />
-                <span style={{ ...mono, fontSize: "0.58rem", color: "#888", overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis", maxWidth: "220px", flexShrink: 0 }}>
+                <span style={{ ...mono, fontSize: "0.58rem", color: "#000", overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis", maxWidth: "220px", flexShrink: 0 }}>
                   {stats.mostRead.authors.slice(0, 3).join(", ")}{stats.mostRead.authors.length > 3 ? " …" : ""}
                 </span>
               </>
