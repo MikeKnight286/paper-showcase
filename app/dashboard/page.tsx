@@ -190,6 +190,7 @@ export default function DashboardPage() {
   const [selectedTags, setSelectedTags] = useState<Set<string>>(new Set());
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [pendingCount, setPendingCount] = useState(0);
+  const [sort, setSort] = useState<'default' | 'alpha' | 'year-asc' | 'year-desc'>('default');
   const router = useRouter();
 
   useEffect(() => {
@@ -204,9 +205,18 @@ export default function DashboardPage() {
   }, [papers]);
 
   const filtered = useMemo(() => {
-    if (selectedTags.size === 0) return papers;
-    return papers.filter((p) => p.tags?.some((t) => selectedTags.has(t)));
-  }, [papers, selectedTags]);
+    let list = selectedTags.size === 0 ? papers : papers.filter((p) => p.tags?.some((t) => selectedTags.has(t)));
+    if (sort === 'alpha')      list = [...list].sort((a, b) => a.title.localeCompare(b.title));
+    if (sort === 'year-desc')  list = [...list].sort((a, b) => b.year - a.year);
+    if (sort === 'year-asc')   list = [...list].sort((a, b) => a.year - b.year);
+    return list;
+  }, [papers, selectedTags, sort]);
+
+  function trackRead(id: string) {
+    // sendBeacon guarantees delivery even when the browser opens a new tab
+    const blob = new Blob([JSON.stringify({ id })], { type: "application/json" });
+    navigator.sendBeacon("/api/stats", blob);
+  }
 
   const toggleTag = (tag: string) => {
     setSelectedTags((prev) => {
@@ -272,6 +282,16 @@ export default function DashboardPage() {
       </header>
 
       <div style={{ maxWidth: "900px", margin: "0 auto", padding: "2rem" }}>
+        {/* Sort controls */}
+        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1.25rem" }}>
+          <span style={{ ...mono, fontSize: "0.58rem", letterSpacing: "0.18em", textTransform: "uppercase", color: "#aaa" }}>Sort</span>
+          {([ ['default', 'Recent'], ['alpha', 'A – Z'], ['year-desc', 'Newest'], ['year-asc', 'Oldest'] ] as const).map(([val, label]) => (
+            <button key={val} onClick={() => setSort(val)} style={{ ...mono, fontSize: "0.6rem", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 500, padding: "0.3rem 0.8rem", borderRadius: "2px", cursor: "pointer", border: `1px solid ${sort === val ? "#c8102e" : "rgba(200,16,46,0.25)"}`, background: sort === val ? "#c8102e" : "#fff", color: sort === val ? "#fff" : "#777", transition: "all 0.15s" }}>
+              {label}
+            </button>
+          ))}
+        </div>
+
         {allTags.length > 0 && (
           <div style={{ marginBottom: "1.75rem" }}>
             <p style={{ ...mono, fontSize: "0.6rem", letterSpacing: "0.25em", textTransform: "uppercase", color: "#aaa", marginBottom: "0.75rem" }}>
@@ -336,6 +356,7 @@ export default function DashboardPage() {
                         href={paperLink}
                         target="_blank"
                         rel="noopener noreferrer"
+                        onClick={() => trackRead(paper.id)}
                         style={{ ...mono, fontSize: "0.62rem", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 500, padding: "0.4rem 1rem", borderRadius: "2px", border: "1px solid #c8102e", background: "#c8102e", color: "#fff", textDecoration: "none", whiteSpace: "nowrap" }}
                         onMouseEnter={(e) => { e.currentTarget.style.background = "#9e0c23"; e.currentTarget.style.borderColor = "#9e0c23"; }}
                         onMouseLeave={(e) => { e.currentTarget.style.background = "#c8102e"; e.currentTarget.style.borderColor = "#c8102e"; }}

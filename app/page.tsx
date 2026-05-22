@@ -1,46 +1,37 @@
 "use client";
+// VERSION 2: Most read in the footer bar instead of under QR code
 
 import { useEffect, useState, useCallback, useRef } from "react";
 
 interface Paper {
-  id: string;
-  title: string;
-  abstract: string;
-  link: string;
-  tags: string[];
-  authors: string[];
-  year: number;
-  venue: string;
-  url?: string;
-  doi?: string;
+  id: string; title: string; abstract: string; link: string;
+  tags: string[]; authors: string[]; year: number; venue: string;
+  url?: string; doi?: string;
+}
+interface Stats {
+  visits: number; total: number; thisMonth: number;
+  mostRead: { title: string; count: number; authors?: string[]; year?: number } | null;
 }
 
-const WIFI_NAME = process.env.NEXT_PUBLIC_WIFI_NAME || "GI";
+const WIFI_NAME      = process.env.NEXT_PUBLIC_WIFI_NAME || "GI";
 const DASHBOARD_PORT = process.env.NEXT_PUBLIC_DASHBOARD_PORT || "3000";
-const ROTATE_MS = parseInt(process.env.NEXT_PUBLIC_ROTATE_MS || "15000");
+const ROTATE_MS      = parseInt(process.env.NEXT_PUBLIC_ROTATE_MS || "15000");
 
-const mono: React.CSSProperties = { fontFamily: "'Courier New', monospace" };
-const serif: React.CSSProperties = { fontFamily: "'Georgia', serif" };
+const mono:    React.CSSProperties = { fontFamily: "'Courier New', monospace" };
+const serif:   React.CSSProperties = { fontFamily: "'Georgia', serif" };
 const display: React.CSSProperties = { fontFamily: "'Georgia', serif" };
 
 function QRImg({ url, size, dark = "#111111" }: { url: string; size: number; dark?: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-
   useEffect(() => {
     if (!url) return;
     import("qrcode").then((QRCode) => {
-      QRCode.toCanvas(canvasRef.current!, url, {
-        width: size,
-        margin: 2,
-        color: { dark, light: "#ffffff" },
-      });
+      QRCode.toCanvas(canvasRef.current!, url, { width: size, margin: 2, color: { dark, light: "#ffffff" } });
     }).catch(() => {});
   }, [url, size, dark]);
-
   return <canvas ref={canvasRef} width={size} height={size} style={{ display: "block" }} />;
 }
 
-// Decorative corner brackets — the signature accent from the original design
 function CornerBrackets({ color = "#c8102e", size = 14, gap = 3 }: { color?: string; size?: number; gap?: number }) {
   const corners = [
     { top: -gap, left: -gap,  borderWidth: "2px 0 0 2px" },
@@ -57,19 +48,32 @@ function CornerBrackets({ color = "#c8102e", size = 14, gap = 3 }: { color?: str
   );
 }
 
+function StatRow({ value, label }: { value: string | number; label: string }) {
+  return (
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: "0.5rem", padding: "0.4rem 0", borderBottom: "1px solid rgba(200,16,46,0.07)" }}>
+      <span style={{ ...mono, fontSize: "0.6rem", color: "#999", letterSpacing: "0.1em", textTransform: "uppercase" }}>{label}</span>
+      <span style={{ ...mono, fontSize: "0.88rem", fontWeight: 700, color: "#c8102e" }}>{value}</span>
+    </div>
+  );
+}
+
 export default function DisplayPage() {
-  const [papers, setPapers] = useState<Paper[]>([]);
-  const [current, setCurrent] = useState(0);
-  const [visible, setVisible] = useState(true);
-  const [progress, setProgress] = useState(0);
-  const [paused, setPaused] = useState(false);
-  const [lanIp, setLanIp] = useState("host-ip");
-  const animRef = useRef<number | null>(null);
+  const [papers, setPapers]        = useState<Paper[]>([]);
+  const [pendingCount, setPending] = useState(0);
+  const [stats, setStats]          = useState<Stats | null>(null);
+  const [current, setCurrent]      = useState(0);
+  const [visible, setVisible]      = useState(true);
+  const [progress, setProgress]    = useState(0);
+  const [paused, setPaused]        = useState(false);
+  const [lanIp, setLanIp]          = useState("host-ip");
+  const animRef  = useRef<number | null>(null);
   const startRef = useRef<number>(0);
 
   useEffect(() => {
-    fetch("/api/papers").then((r) => r.json()).then(setPapers);
-    fetch("/api/lan-ip").then((r) => r.json()).then((d) => { if (d.ip) setLanIp(d.ip); }).catch(() => {});
+    fetch("/api/papers").then(r => r.json()).then(setPapers);
+    fetch("/api/upload").then(r => r.json()).then((d: unknown[]) => setPending(Array.isArray(d) ? d.length : 0)).catch(() => {});
+    fetch("/api/lan-ip").then(r => r.json()).then((d) => { if (d.ip) setLanIp(d.ip); }).catch(() => {});
+    fetch("/api/stats?visit=1").then(r => r.json()).then(setStats).catch(() => {});
   }, []);
 
   const goTo = useCallback((idx: number) => {
@@ -77,8 +81,7 @@ export default function DisplayPage() {
     setVisible(false);
     setTimeout(() => {
       setCurrent((idx + papers.length) % papers.length);
-      setVisible(true);
-      setProgress(0);
+      setVisible(true); setProgress(0);
       startRef.current = performance.now();
     }, 380);
   }, [papers.length]);
@@ -114,14 +117,12 @@ export default function DisplayPage() {
     return () => window.removeEventListener("keydown", handler);
   }, [next, prev]);
 
-  const paper = papers[current];
-
+  const paper        = papers[current];
   const dashboardUrl = `http://${lanIp}:${DASHBOARD_PORT}/dashboard`;
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100vh", overflow: "hidden", background: "#fff", borderTop: "4px solid #c8102e" }}>
 
-      {/* ── Header ── */}
       <header style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "1rem 2.5rem", borderBottom: "1px solid rgba(200,16,46,0.13)", background: "#fff", flexShrink: 0 }}>
         <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
           <div style={{ width: "28px", height: "28px", background: "#c8102e", borderRadius: "2px", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
@@ -132,153 +133,81 @@ export default function DisplayPage() {
               <rect x="1" y="11.5" width="6" height="1.5" rx="0.5" />
             </svg>
           </div>
-          <span style={{ ...mono, fontSize: "0.7rem", letterSpacing: "0.2em", textTransform: "uppercase", color: "#111", fontWeight: 500 }}>
-            Paper Reading
-          </span>
+          <span style={{ ...mono, fontSize: "0.7rem", letterSpacing: "0.2em", textTransform: "uppercase", color: "#111", fontWeight: 500 }}>Paper Showcase</span>
         </div>
-        <button
-          onClick={() => setPaused((v) => !v)}
-          style={{ ...mono, fontSize: "0.65rem", letterSpacing: "0.12em", textTransform: "uppercase", padding: "0.38rem 1rem", borderRadius: "2px", border: `1px solid ${paused ? "#c8102e" : "rgba(200,16,46,0.3)"}`, color: paused ? "#c8102e" : "#555", background: paused ? "#fdedf0" : "transparent", cursor: "pointer" }}
-        >
+        <button onClick={() => setPaused(v => !v)}
+          style={{ ...mono, fontSize: "0.65rem", letterSpacing: "0.12em", textTransform: "uppercase", padding: "0.38rem 1rem", borderRadius: "2px", border: `1px solid ${paused ? "#c8102e" : "rgba(200,16,46,0.3)"}`, color: paused ? "#c8102e" : "#555", background: paused ? "#fdedf0" : "transparent", cursor: "pointer" }}>
           {paused ? "play" : "pause"}
         </button>
       </header>
 
-      {/* ── Progress bar ── */}
       <div style={{ height: "3px", background: "#f5dde1", flexShrink: 0 }}>
         <div style={{ height: "100%", width: `${progress}%`, background: "#c8102e", transition: "none" }} />
       </div>
 
-      {/* ── Main ── */}
       <main style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: "1.25rem 2rem", overflow: "hidden" }}>
         <div style={{ width: "100%", maxWidth: "1120px" }}>
           {paper ? (
             <div style={{
-              border: "1px solid rgba(200,16,46,0.13)",
-              borderTop: "3px solid #c8102e",
-              borderRadius: "2px",
-              overflow: "hidden",
-              boxShadow: "0 2px 20px rgba(200,16,46,0.07), 0 1px 4px rgba(0,0,0,0.04)",
-              opacity: visible ? 1 : 0,
-              transform: visible ? "translateY(0)" : "translateY(16px)",
+              opacity: visible ? 1 : 0, transform: visible ? "translateY(0)" : "translateY(16px)",
               transition: "opacity 0.4s ease, transform 0.4s ease",
-              // Three columns: paper text | paper QR | dashboard QR + WiFi
-              display: "grid",
-              gridTemplateColumns: "1fr 240px",
-              minHeight: "420px",
+              display: "grid", gridTemplateColumns: "1fr 240px", minHeight: "420px",
             }}>
-
-              {/* ── Col 1: Paper content ── */}
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", padding: "2.25rem 3rem 1.75rem", borderRight: "1px solid rgba(200,16,46,0.13)" }}>
+              {/* Paper content */}
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", padding: "2.25rem 3rem 1.75rem" }}>
                 <h2 style={{ ...display, fontWeight: 700, fontSize: "clamp(1.5rem, 2.4vw, 2.1rem)", lineHeight: 1.2, color: "#111", marginBottom: "1.1rem", maxWidth: "520px" }}>
                   {paper.title}
                 </h2>
-
                 <div style={{ marginBottom: "1.1rem", maxWidth: "520px", width: "100%" }}>
-                  <p style={{ ...serif, fontSize: "0.9rem", color: "#444", fontStyle: "italic", marginBottom: "0.3rem", lineHeight: 1.5 }}>
-                    {paper.authors.join(", ")}
-                  </p>
-                  <p style={{ ...mono, fontSize: "0.62rem", letterSpacing: "0.1em", color: "#c8102e", fontWeight: 500 }}>
-                    {[paper.venue, paper.year].filter(Boolean).join(" · ")}
-                  </p>
+                  <p style={{ ...serif, fontSize: "0.9rem", color: "#444", fontStyle: "italic", marginBottom: "0.3rem", lineHeight: 1.5 }}>{paper.authors.join(", ")}</p>
+                  <p style={{ ...mono, fontSize: "0.62rem", letterSpacing: "0.1em", color: "#c8102e", fontWeight: 500 }}>{[paper.venue, paper.year].filter(Boolean).join(" · ")}</p>
                 </div>
-
-                {/* Decorative divider */}
                 <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1.1rem", width: "100%", maxWidth: "240px" }}>
                   <div style={{ flex: 1, height: "1px", background: "rgba(200,16,46,0.3)", opacity: 0.5 }} />
                   <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#c8102e", flexShrink: 0 }} />
                   <div style={{ flex: 1, height: "1px", background: "rgba(200,16,46,0.3)", opacity: 0.5 }} />
                 </div>
-
-                <p style={{
-                  ...serif, fontSize: "0.97rem", lineHeight: 1.8, color: "#2a2a2a", fontWeight: 300,
-                  maxWidth: "520px", flex: 1, overflow: "hidden",
-                  display: "-webkit-box", WebkitLineClamp: 6, WebkitBoxOrient: "vertical" as const,
-                }}>
+                <p style={{ ...serif, fontSize: "1.02rem", lineHeight: 1.85, color: "#1a1a1a", fontWeight: 400, maxWidth: "520px", flex: 1, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 6, WebkitBoxOrient: "vertical" as const }}>
                   {paper.abstract}
                 </p>
-
                 {paper.tags?.length > 0 && (
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: "0.45rem", justifyContent: "center", width: "100%", marginTop: "1.25rem", paddingTop: "1.1rem", borderTop: "1px solid rgba(200,16,46,0.13)" }}>
-                    {paper.tags.map((t) => (
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "0.45rem", justifyContent: "center", width: "100%", marginTop: "1.25rem", paddingTop: "1.1rem" }}>
+                    {paper.tags.map(t => (
                       <span key={t} style={{ ...mono, fontSize: "0.72rem", letterSpacing: "0.08em", textTransform: "uppercase", fontWeight: 600, background: "#c8102e", color: "#fff", border: "1px solid #c8102e", padding: "0.3rem 0.8rem", borderRadius: "2px" }}>{t}</span>
                     ))}
                   </div>
                 )}
               </div>
 
-              {/* ── Col 2: Dashboard QR ── */}
-              <div style={{
-                background: "#fff",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: "0",
-                padding: "0",
-              }}>
-                {/* Top zone: WiFi instruction */}
-                <div style={{
-                  width: "100%",
-                  padding: "1.25rem 1.5rem 1rem",
-                  borderBottom: "1px solid rgba(200,16,46,0.08)",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: "0.4rem",
-                  flex: "0 0 auto",
-                }}>
-                  <span style={{ ...mono, fontSize: "0.58rem", letterSpacing: "0.28em", textTransform: "uppercase", color: "#000" }}>
-                    browse library
-                  </span>
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", marginTop: "0.15rem" }}>
-                    {/* WiFi icon */}
-                    <svg width="11" height="9" viewBox="0 0 11 9" fill="none" stroke="#c8102e" strokeWidth="1.2" strokeLinecap="round">
-                      <path d="M1 3.5C2.8 1.5 5.5 0.5 10 3.5" opacity="0.3"/>
-                      <path d="M2.5 5C3.8 3.5 5.5 2.8 8.5 5" opacity="0.6"/>
-                      <path d="M4 6.5C4.8 5.8 5.5 5.5 7 6.5" />
-                      <circle cx="5.5" cy="8" r="0.8" fill="#c8102e" stroke="none"/>
-                    </svg>
-                    <span style={{ ...mono, fontSize: "0.58rem", color: "#c8102e", fontWeight: 500, letterSpacing: "0.06em" }}>
-                      {WIFI_NAME}
-                    </span>
+              {/* Right column: WiFi + QR + stats only (no most read here) */}
+              <div style={{ background: "#fdf5f5", display: "flex", flexDirection: "column", alignItems: "stretch" }}>
+                <div style={{ padding: "1.5rem 1.25rem 1.25rem", display: "flex", flexDirection: "column", alignItems: "center", gap: "0.9rem", borderBottom: "1px solid rgba(200,16,46,0.1)" }}>
+                  <div style={{ textAlign: "center" }}>
+                    <p style={{ ...mono, fontSize: "0.68rem", letterSpacing: "0.12em", textTransform: "uppercase", color: "#555", fontWeight: 500, marginBottom: "0.3rem" }}>Connect to Wi-Fi</p>
+                    <div style={{ display: "inline-flex", alignItems: "center", gap: "0.4rem", background: "#fff", border: "1px solid rgba(200,16,46,0.25)", borderRadius: "2px", padding: "0.28rem 0.7rem" }}>
+                      <svg width="13" height="10" viewBox="0 0 13 10" fill="none" stroke="#c8102e" strokeWidth="1.3" strokeLinecap="round">
+                        <path d="M1 3.5C3 1.2 6.5 0 12 3.5" opacity="0.25"/><path d="M2.5 5.2C4 3.3 6.5 2.4 10.5 5.2" opacity="0.55"/><path d="M4.5 7C5.5 5.9 6.5 5.5 8.5 7"/>
+                        <circle cx="6.5" cy="9" r="0.9" fill="#c8102e" stroke="none"/>
+                      </svg>
+                      <span style={{ ...mono, fontSize: "0.75rem", color: "#c8102e", fontWeight: 700, letterSpacing: "0.08em" }}>{WIFI_NAME}</span>
+                    </div>
+                    <p style={{ ...mono, fontSize: "0.62rem", color: "#888", marginTop: "0.35rem", letterSpacing: "0.06em" }}>then scan to browse</p>
                   </div>
+                  <div style={{ position: "relative", padding: "10px", background: "#fff", border: "1px solid rgba(200,16,46,0.25)", borderRadius: "2px", boxShadow: "0 2px 10px rgba(200,16,46,0.08)" }}>
+                    <CornerBrackets color="#c8102e" size={12} gap={3} />
+                    <QRImg url={dashboardUrl} size={140} dark="#111111" />
+                  </div>
+                  <p style={{ ...mono, fontSize: "0.58rem", color: "#aaa", textAlign: "center", lineHeight: 1.6, wordBreak: "break-all", maxWidth: "180px" }}>{dashboardUrl}</p>
                 </div>
 
-                {/* Middle zone: QR code */}
-                <div style={{
-                  flex: 1,
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: "0.75rem",
-                  padding: "1.25rem 1.5rem",
-                }}>
-                  <div style={{ position: "relative", padding: "8px", background: "#fff", border: "1px solid rgba(200,16,46,0.18)", borderRadius: "2px" }}>
-                    <CornerBrackets color="rgba(200,16,46,0.5)" size={11} gap={2} />
-                    <QRImg url={dashboardUrl} size={116} dark="#2a2a2a" />
-                  </div>
-                  <p style={{ ...mono, fontSize: "0.56rem", color: "#000", textAlign: "center", lineHeight: 1.7, maxWidth: "140px" }}>
-                    Scan to open the paper library on your device
-                  </p>
-                </div>
-
-                {/* Bottom zone: URL */}
-                <div style={{
-                  width: "100%",
-                  borderTop: "1px solid rgba(200,16,46,0.08)",
-                  padding: "0.75rem 1rem",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}>
-                  <span style={{ ...mono, fontSize: "0.52rem", color: "#000", letterSpacing: "0.04em", textAlign: "center", wordBreak: "break-all" }}>
-                    {dashboardUrl}
-                  </span>
+                <div style={{ flex: 1, padding: "1rem 1.25rem", display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                  <p style={{ ...mono, fontSize: "0.55rem", letterSpacing: "0.22em", textTransform: "uppercase", color: "#bbb", marginBottom: "0.5rem", fontWeight: 500 }}>Library stats</p>
+                  <StatRow value={stats?.visits ?? "—"} label="Total visits" />
+                  <StatRow value={stats?.total ?? papers.length} label="Papers" />
+                  <StatRow value={stats?.thisMonth ?? "—"} label="Added this month" />
+                  {pendingCount > 0 && <StatRow value={pendingCount} label="In queue" />}
                 </div>
               </div>
-
             </div>
           ) : (
             <div style={{ textAlign: "center", ...mono, fontSize: "0.8rem", color: "#aaa" }}>Loading papers…</div>
@@ -286,21 +215,52 @@ export default function DisplayPage() {
         </div>
       </main>
 
-      {/* ── Footer nav ── */}
-      <footer style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.75rem 2.5rem", borderTop: "1px solid rgba(200,16,46,0.13)", flexShrink: 0 }}>
-        <div style={{ display: "flex", gap: "0.5rem" }}>
-          {([["←", prev], ["→", next]] as [string, () => void][]).map(([label, fn], i) => (
-            <button key={i} onClick={fn} style={{ width: "34px", height: "34px", border: "1px solid rgba(200,16,46,0.3)", borderRadius: "2px", background: "none", color: "#555", cursor: "pointer", fontSize: "1rem", ...mono, display: "flex", alignItems: "center", justifyContent: "center" }}>{label}</button>
-          ))}
+      {/* Footer — most read lives here in v2 */}
+      <footer style={{ borderTop: "1px solid rgba(200,16,46,0.13)", flexShrink: 0 }}>
+        {/* Most read bar */}
+        {stats?.mostRead && (
+          <div style={{ display: "flex", alignItems: "center", gap: "1rem", padding: "0.5rem 2.5rem", borderBottom: "1px solid rgba(200,16,46,0.08)", background: "#fdf5f5", minWidth: 0 }}>
+            <span style={{ ...mono, fontSize: "0.55rem", letterSpacing: "0.2em", textTransform: "uppercase", color: "#c8102e", fontWeight: 600, flexShrink: 0 }}>
+              Most read
+            </span>
+            <div style={{ width: "1px", height: "12px", background: "rgba(200,16,46,0.2)", flexShrink: 0 }} />
+            <span style={{ ...serif, fontSize: "0.82rem", color: "#333", fontStyle: "italic", overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis", flex: 1 }}>
+              {stats.mostRead.title}
+            </span>
+            {stats.mostRead.authors && stats.mostRead.authors.length > 0 && (
+              <>
+                <div style={{ width: "1px", height: "12px", background: "rgba(200,16,46,0.15)", flexShrink: 0 }} />
+                <span style={{ ...mono, fontSize: "0.58rem", color: "#888", overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis", maxWidth: "220px", flexShrink: 0 }}>
+                  {stats.mostRead.authors.slice(0, 3).join(", ")}{stats.mostRead.authors.length > 3 ? " …" : ""}
+                </span>
+              </>
+            )}
+            {stats.mostRead.year && (
+              <>
+                <div style={{ width: "1px", height: "12px", background: "rgba(200,16,46,0.15)", flexShrink: 0 }} />
+                <span style={{ ...mono, fontSize: "0.58rem", color: "#c8102e", fontWeight: 600, flexShrink: 0 }}>
+                  {stats.mostRead.year}
+                </span>
+              </>
+            )}
+          </div>
+        )}
+        {/* Nav bar */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.75rem 2.5rem" }}>
+          <div style={{ display: "flex", gap: "0.5rem" }}>
+            {([["←", prev], ["→", next]] as [string, () => void][]).map(([label, fn], i) => (
+              <button key={i} onClick={fn} style={{ width: "34px", height: "34px", border: "1px solid rgba(200,16,46,0.3)", borderRadius: "2px", background: "none", color: "#555", cursor: "pointer", fontSize: "1rem", ...mono, display: "flex", alignItems: "center", justifyContent: "center" }}>{label}</button>
+            ))}
+          </div>
+          <div style={{ display: "flex", gap: "8px" }}>
+            {papers.map((_, i) => (
+              <button key={i} onClick={() => goTo(i)} style={{ width: "6px", height: "6px", borderRadius: "50%", background: i === current ? "#c8102e" : "#ddd", border: `1px solid ${i === current ? "#c8102e" : "#ccc"}`, transform: i === current ? "scale(1.35)" : "scale(1)", transition: "all 0.3s", cursor: "pointer", padding: 0 }} />
+            ))}
+          </div>
+          <span style={{ ...mono, fontSize: "0.6rem", color: "#aaa", letterSpacing: "0.1em" }}>
+            {paused ? "paused" : `auto · ${ROTATE_MS / 1000}s`}
+          </span>
         </div>
-        <div style={{ display: "flex", gap: "8px" }}>
-          {papers.map((_, i) => (
-            <button key={i} onClick={() => goTo(i)} style={{ width: "6px", height: "6px", borderRadius: "50%", background: i === current ? "#c8102e" : "#ddd", border: `1px solid ${i === current ? "#c8102e" : "#ccc"}`, transform: i === current ? "scale(1.35)" : "scale(1)", transition: "all 0.3s", cursor: "pointer", padding: 0 }} />
-          ))}
-        </div>
-        <span style={{ ...mono, fontSize: "0.6rem", color: "#aaa", letterSpacing: "0.1em" }}>
-          {paused ? "paused" : `auto · ${ROTATE_MS / 1000}s`}
-        </span>
       </footer>
     </div>
   );
