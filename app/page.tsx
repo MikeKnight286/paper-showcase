@@ -51,7 +51,7 @@ function CornerBrackets({ color = "#c8102e", size = 14, gap = 3 }: { color?: str
 function StatRow({ value, label }: { value: string | number; label: string }) {
   return (
     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: "0.5rem", padding: "0.4rem 0", borderBottom: "1px solid rgba(200,16,46,0.07)" }}>
-      <span style={{ ...mono, fontSize: "0.6rem", color: "#999", letterSpacing: "0.1em", textTransform: "uppercase" }}>{label}</span>
+      <span style={{ ...mono, fontSize: "0.6rem", color: "#000", letterSpacing: "0.1em", textTransform: "uppercase" }}>{label}</span>
       <span style={{ ...mono, fontSize: "0.88rem", fontWeight: 700, color: "#c8102e" }}>{value}</span>
     </div>
   );
@@ -183,7 +183,7 @@ export default function DisplayPage() {
               <div style={{ background: "#fdf5f5", display: "flex", flexDirection: "column", alignItems: "stretch" }}>
                 <div style={{ padding: "1.5rem 1.25rem 1.25rem", display: "flex", flexDirection: "column", alignItems: "center", gap: "0.9rem", borderBottom: "1px solid rgba(200,16,46,0.1)" }}>
                   <div style={{ textAlign: "center" }}>
-                    <p style={{ ...mono, fontSize: "0.68rem", letterSpacing: "0.12em", textTransform: "uppercase", color: "#555", fontWeight: 500, marginBottom: "0.3rem" }}>Connect to Wi-Fi</p>
+                    <p style={{ ...mono, fontSize: "1rem", letterSpacing: "0.12em", textTransform: "uppercase", color: "#000", fontWeight: 500, marginBottom: "0.3rem" }}>Connect to Wi-Fi</p>
                     <div style={{ display: "inline-flex", alignItems: "center", gap: "0.4rem", background: "#fff", border: "1px solid rgba(200,16,46,0.25)", borderRadius: "2px", padding: "0.28rem 0.7rem" }}>
                       <svg width="13" height="10" viewBox="0 0 13 10" fill="none" stroke="#c8102e" strokeWidth="1.3" strokeLinecap="round">
                         <path d="M1 3.5C3 1.2 6.5 0 12 3.5" opacity="0.25"/><path d="M2.5 5.2C4 3.3 6.5 2.4 10.5 5.2" opacity="0.55"/><path d="M4.5 7C5.5 5.9 6.5 5.5 8.5 7"/>
@@ -191,17 +191,17 @@ export default function DisplayPage() {
                       </svg>
                       <span style={{ ...mono, fontSize: "0.75rem", color: "#c8102e", fontWeight: 700, letterSpacing: "0.08em" }}>{WIFI_NAME}</span>
                     </div>
-                    <p style={{ ...mono, fontSize: "0.62rem", color: "#888", marginTop: "0.35rem", letterSpacing: "0.06em" }}>then scan to browse</p>
+                    <p style={{ ...mono, fontSize: "0.62rem", color: "#000", marginTop: "0.35rem", letterSpacing: "0.06em" }}>then scan to browse</p>
                   </div>
                   <div style={{ position: "relative", padding: "10px", background: "#fff", border: "1px solid rgba(200,16,46,0.25)", borderRadius: "2px", boxShadow: "0 2px 10px rgba(200,16,46,0.08)" }}>
                     <CornerBrackets color="#c8102e" size={12} gap={3} />
                     <QRImg url={dashboardUrl} size={140} dark="#111111" />
                   </div>
-                  <p style={{ ...mono, fontSize: "0.58rem", color: "#aaa", textAlign: "center", lineHeight: 1.6, wordBreak: "break-all", maxWidth: "180px" }}>{dashboardUrl}</p>
+                  <p style={{ ...mono, fontSize: "0.58rem", color: "#000", textAlign: "center", lineHeight: 1.6, wordBreak: "break-all", maxWidth: "180px" }}>{dashboardUrl}</p>
                 </div>
 
                 <div style={{ flex: 1, padding: "1rem 1.25rem", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                  <p style={{ ...mono, fontSize: "0.55rem", letterSpacing: "0.22em", textTransform: "uppercase", color: "#bbb", marginBottom: "0.5rem", fontWeight: 500 }}>Library stats</p>
+                  <p style={{ ...mono, fontSize: "0.55rem", letterSpacing: "0.22em", textTransform: "uppercase", color: "#000", marginBottom: "0.5rem", fontWeight: 500 }}>Library stats</p>
                   <StatRow value={stats?.visits ?? "—"} label="Total visits" />
                   <StatRow value={stats?.total ?? papers.length} label="Papers" />
                   <StatRow value={stats?.thisMonth ?? "—"} label="Added this month" />
@@ -210,7 +210,7 @@ export default function DisplayPage() {
               </div>
             </div>
           ) : (
-            <div style={{ textAlign: "center", ...mono, fontSize: "0.8rem", color: "#aaa" }}>Loading papers…</div>
+            <div style={{ textAlign: "center", ...mono, fontSize: "0.8rem", color: "#000" }}>Loading papers…</div>
           )}
         </div>
       </main>
