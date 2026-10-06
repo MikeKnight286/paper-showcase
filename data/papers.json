@@ -1,5 +1,23 @@
 [
   {
+    "title": "Hierarchical Concept Geometry in Language Models Emerges from Word Co-occurrence",
+    "authors": [
+      "Andres Nava",
+      "Matthieu Wyart"
+    ],
+    "year": 2026,
+    "abstract": "We propose a distributional theory of how hypernymy---the ``is-a'' relation between general and specific concepts---is encoded geometrically in language representations. Starting from the empirically verified assumption that words closer on the WordNet hypernym graph co-occur more often, we characterize theoretically the spectrum of the resulting embedding Gram matrix of word2vec embeddings. Under mild positivity and decay conditions on the co-occurrence kernel, we prove that the leading eigenvectors first separate broad taxonomic branches and then progressively finer sub-branches, producing a hierarchical splitting geometry with a coarse-to-fine spectral organization that mirrors the tree. We confirm these predictions in word2vec embeddings across many sampled WordNet subtrees, and show that the same signature extends strikingly well to Gemma 2B unembeddings. Our results indicate that hierarchical concept geometry in LLMs need not reflect a hierarchy-specific functional mechanism, but emerges from the spectral structure of pairwise word statistics.",
+    "tags": [
+      "NLP",
+      "Geometry of Representation",
+      "Concept Geometry"
+    ],
+    "doi": "https10.48550/arXiv.2605.23821",
+    "url": "https://arxiv.org/abs/2605.23821",
+    "id": "9795a9f3-9c75-493a-8f2e-56b5efe542d0",
+    "addedAt": "2026-10-06T05:29:25.430Z"
+  },
+  {
     "id": "1",
     "title": "Attention Is All You Need",
     "abstract": "The dominant sequence transduction models are based on complex recurrent or convolutional neural networks that include an encoder and a decoder. The best performing models also connect the encoder and decoder through an attention mechanism. We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely. Experiments on two machine translation tasks show these models to be superior in quality while being more parallelizable and requiring significantly less time to train.",
