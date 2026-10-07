@@ -7,7 +7,7 @@ A research paper carousel and library for labs and reading groups. Three views, 
 | `/` | Monitor display | Rotating paper carousel with LAN QR code |
 | `/dashboard` | Anyone on the network | Browse, search, filter by tag, reading checklist, PDF viewer, submit papers |
 | `/admin` | Admin only | Add papers (with DOI auto-fill), manage library |
-| `/admin/queue` | Admin only | Review and approve/reject user-submitted papers |
+| `/paperreading` | Anyone (approve/reject: admin only) | Submit papers; admins review the queue, preview PDFs, approve or reject |
 
 ---
 
@@ -21,7 +21,7 @@ npm run dev
 
 - Monitor: `http://localhost:3000`
 - Dashboard: `http://<your-LAN-IP>:3000/dashboard`
-- Admin: `http://localhost:3000/admin`
+- Admin: `http://localhost:3000/admin` (log in with `ADMIN_PASSWORD`)
 
 ---
 
@@ -44,17 +44,17 @@ npm run dev
 The monitor page fetches `/api/lan-ip` at startup, which reads `os.networkInterfaces()` to find the machine's LAN IP. A QR code is generated pointing to `http://<IP>:<PORT>/dashboard`, allowing guests on the same WiFi to navigate directly to the library.
 
 ### Feature 2 — User paper submissions with admin approval queue
-Anyone can submit a PDF and metadata via the dashboard. Uploaded files go to `data/pending/` and are never publicly accessible — they are served through an authenticated API proxy (`/api/pending-pdf/[id]`). Admins review submissions at `/admin/queue`, preview them inline, and approve or reject. Approved PDFs move to `public/papers/`; rejected ones are deleted.
+Anyone can submit a PDF and metadata via the dashboard. Uploaded files go to `data/pending/` and are never publicly accessible — they are served through an authenticated API proxy (`/api/pending-pdf/[id]`). Admins review submissions at `/paperreading`, preview them inline, and approve or reject. Approved PDFs move to `public/papers/`; rejected ones are deleted.
 
 **Security measures:**
 - PDF magic bytes validated server-side (`%PDF` header), not just MIME type
 - File size capped (default 20 MB)
 - Pending files served through API proxy, not static paths
-- All admin API routes check `isAdmin()` (localhost or session cookie)
+- All admin pages and API routes check `isAdmin()` (password session cookie; localhost gets no exemption, since x-forwarded-for can be spoofed)
 - Path traversal prevention via `path.basename()`
 
 ### Feature 3 — DOI auto-fill for admins
-Admins paste a DOI into the admin panel and click Fetch. The server calls CrossRef (`api.crossref.org`), parses title, authors, year, abstract, and URL, and pre-fills the add form. Tags must be entered manually. Duplicate DOI detection fires before the CrossRef request.
+Admins paste a DOI into the admin panel and click Fetch. The server calls CrossRef (`api.crossref.org`) and, if the DOI isn't registered there, DataCite (`api.datacite.org` — arXiv, Zenodo, datasets). It parses title, authors, year, abstract, and URL, and pre-fills the add form. arXiv IDs and URLs (`2401.12345`, `arXiv:2401.12345v2`, `arxiv.org/abs/…`) are converted to their `10.48550/arXiv.*` DOI. Tags must be entered manually. Duplicate DOI detection fires before any lookup.
 
 ---
 

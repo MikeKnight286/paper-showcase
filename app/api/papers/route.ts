@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import { getPapers, savePapers } from '@/lib/db';
 import { isAdmin } from '@/lib/auth';
 import { NextRequest } from 'next/server';
-import { v4 as uuidv4 } from 'uuid';
 import type { Paper } from '@/types';
 
 export const dynamic = 'force-dynamic';
@@ -18,7 +17,7 @@ export async function POST(req: NextRequest) {
   const body = await req.json() as Omit<Paper, 'id' | 'addedAt'>;
   const paper: Paper = {
     ...body,
-    id: uuidv4(),
+    id: crypto.randomUUID(),
     addedAt: new Date().toISOString(),
   };
   const papers = getPapers();

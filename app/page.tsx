@@ -1,16 +1,16 @@
 "use client";
-// VERSION 2: Most read in the footer bar instead of under QR code
+// VERSION 2: Recently added in the footer bar
 
 import { useEffect, useState, useCallback, useRef } from "react";
+import { mono, serif } from "@/lib/fonts";
 
 interface Paper {
   id: string; title: string; abstract: string; link: string;
   tags: string[]; authors: string[]; year: number; venue: string;
-  url?: string; doi?: string;
+  url?: string; doi?: string; addedAt?: string;
 }
 interface Stats {
   visits: number; total: number; thisMonth: number;
-  mostRead: { title: string; count: number; authors?: string[]; year?: number } | null;
 }
 
 const WIFI_NAME      = process.env.NEXT_PUBLIC_WIFI_NAME || "GI";
@@ -18,9 +18,6 @@ const DASHBOARD_PORT = process.env.NEXT_PUBLIC_DASHBOARD_PORT || "3000";
 const ROTATE_MS      = parseInt(process.env.NEXT_PUBLIC_ROTATE_MS || "15000");
 const REFRESH_MS     = parseInt(process.env.NEXT_PUBLIC_REFRESH_MS || "60000");
 
-const mono:    React.CSSProperties = { fontFamily: "'Courier New', monospace" };
-const serif:   React.CSSProperties = { fontFamily: "'Georgia', serif" };
-const display: React.CSSProperties = { fontFamily: "'Georgia', serif" };
 
 function QRImg({ url, size, dark = "#111111" }: { url: string; size: number; dark?: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -52,10 +49,22 @@ function CornerBrackets({ color = "#c8102e", size = 14, gap = 3 }: { color?: str
 function StatRow({ value, label }: { value: string | number; label: string }) {
   return (
     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: "0.5rem", padding: "0.4rem 0", borderBottom: "1px solid rgba(200,16,46,0.07)" }}>
-      <span style={{ ...mono, fontSize: "0.6rem", color: "#000", letterSpacing: "0.1em", textTransform: "uppercase" }}>{label}</span>
+      <span style={{ ...mono, fontSize: "0.75rem", color: "#000", letterSpacing: "0.1em", textTransform: "uppercase" }}>{label}</span>
       <span style={{ ...mono, fontSize: "0.88rem", fontWeight: 700, color: "#c8102e" }}>{value}</span>
     </div>
   );
+}
+
+// Newest 10 first so additions appear within minutes, then the rest shuffled:
+// a full pass over hundreds of papers would take hours at 15s each.
+function rotationOrder(list: Paper[]): Paper[] {
+  const byNewest = [...list].sort((a, b) => (b.addedAt ?? "").localeCompare(a.addedAt ?? ""));
+  const rest = byNewest.slice(10);
+  for (let i = rest.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [rest[i], rest[j]] = [rest[j], rest[i]];
+  }
+  return [...byNewest.slice(0, 10), ...rest];
 }
 
 export default function DisplayPage() {
@@ -68,11 +77,19 @@ export default function DisplayPage() {
   const [paused, setPaused]        = useState(false);
   const [lanIp, setLanIp]          = useState("host-ip");
   const animRef  = useRef<number | null>(null);
+  const idsRef   = useRef("");
   const startRef = useRef<number>(0);
 
   // Fetch all data — called on mount and on every refresh interval
   function fetchData(_isFirstLoad = false) {
-    fetch("/api/papers").then(r => r.json()).then(setPapers).catch(() => {});
+    fetch("/api/papers").then(r => r.json()).then((list: Paper[]) => {
+      // Re-order only when the library changes, so the refresh doesn't jump mid-rotation
+      const key = list.map(p => p.id).sort().join();
+      if (key === idsRef.current) return;
+      idsRef.current = key;
+      setPapers(rotationOrder(list));
+      setCurrent(0);
+    }).catch(() => {});
     fetch("/api/upload").then(r => r.json()).then((d: unknown[]) => setPending(Array.isArray(d) ? d.length : 0)).catch(() => {});
     fetch("/api/lan-ip").then(r => r.json()).then((d) => { if (d.ip) setLanIp(d.ip); }).catch(() => {});
     // Carousel never increments visit count — dashboard does that
@@ -129,6 +146,8 @@ export default function DisplayPage() {
 
   const paper        = papers[current];
   const dashboardUrl = `http://${lanIp}:${DASHBOARD_PORT}/dashboard`;
+  // ISO strings sort chronologically
+  const recent       = papers.reduce<Paper | null>((a, p) => (p.addedAt ?? "") > (a?.addedAt ?? "") ? p : a, null);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100vh", overflow: "hidden", background: "#fff", borderTop: "4px solid #c8102e" }}>
@@ -143,10 +162,10 @@ export default function DisplayPage() {
               <rect x="1" y="11.5" width="6" height="1.5" rx="0.5" />
             </svg>
           </div>
-          <span style={{ ...mono, fontSize: "0.7rem", letterSpacing: "0.2em", textTransform: "uppercase", color: "#111", fontWeight: 500 }}>Paper Showcase</span>
+          <span style={{ ...mono, fontSize: "0.75rem", letterSpacing: "0.2em", textTransform: "uppercase", color: "#111", fontWeight: 500 }}>Paper Showcase</span>
         </div>
         <button onClick={() => setPaused(v => !v)}
-          style={{ ...mono, fontSize: "0.65rem", letterSpacing: "0.12em", textTransform: "uppercase", padding: "0.38rem 1rem", borderRadius: "2px", border: `1px solid ${paused ? "#c8102e" : "rgba(200,16,46,0.3)"}`, color: paused ? "#c8102e" : "#555", background: paused ? "#fdedf0" : "transparent", cursor: "pointer" }}>
+          style={{ ...mono, fontSize: "0.75rem", letterSpacing: "0.12em", textTransform: "uppercase", padding: "0.38rem 1rem", borderRadius: "2px", border: `1px solid ${paused ? "#c8102e" : "rgba(200,16,46,0.3)"}`, color: paused ? "#c8102e" : "#555", background: paused ? "#fdedf0" : "transparent", cursor: "pointer" }}>
           {paused ? "play" : "pause"}
         </button>
       </header>
@@ -165,12 +184,12 @@ export default function DisplayPage() {
             }}>
               {/* Paper content */}
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", padding: "2.25rem 3rem 1.75rem" }}>
-                <h2 style={{ ...display, fontWeight: 700, fontSize: "clamp(1.5rem, 2.4vw, 2.1rem)", lineHeight: 1.2, color: "#111", marginBottom: "1.1rem", maxWidth: "520px" }}>
+                <h2 style={{ ...serif, fontWeight: 700, fontSize: "clamp(1.5rem, 2.4vw, 2.1rem)", lineHeight: 1.2, color: "#111", marginBottom: "1.1rem", maxWidth: "520px" }}>
                   {paper.title}
                 </h2>
                 <div style={{ marginBottom: "1.1rem", maxWidth: "520px", width: "100%" }}>
                   <p style={{ ...serif, fontSize: "0.9rem", color: "#444", fontStyle: "italic", marginBottom: "0.3rem", lineHeight: 1.5 }}>{paper.authors.join(", ")}</p>
-                  <p style={{ ...mono, fontSize: "0.62rem", letterSpacing: "0.1em", color: "#c8102e", fontWeight: 500 }}>{[paper.venue, paper.year].filter(Boolean).join(" · ")}</p>
+                  <p style={{ ...mono, fontSize: "0.75rem", letterSpacing: "0.1em", color: "#c8102e", fontWeight: 500 }}>{[paper.venue, paper.year].filter(Boolean).join(" · ")}</p>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1.1rem", width: "100%", maxWidth: "240px" }}>
                   <div style={{ flex: 1, height: "1px", background: "rgba(200,16,46,0.3)", opacity: 0.5 }} />
@@ -187,7 +206,7 @@ export default function DisplayPage() {
                 {paper.tags?.length > 0 && (
                   <div style={{ display: "flex", flexWrap: "wrap", gap: "0.45rem", justifyContent: "center", width: "100%", marginTop: "1.25rem", paddingTop: "1.1rem" }}>
                     {paper.tags.map(t => (
-                      <span key={t} style={{ ...mono, fontSize: "0.72rem", letterSpacing: "0.08em", textTransform: "uppercase", fontWeight: 600, background: "#c8102e", color: "#fff", border: "1px solid #c8102e", padding: "0.3rem 0.8rem", borderRadius: "2px" }}>{t}</span>
+                      <span key={t} style={{ ...mono, fontSize: "0.75rem", letterSpacing: "0.08em", textTransform: "uppercase", fontWeight: 600, background: "#c8102e", color: "#fff", border: "1px solid #c8102e", padding: "0.3rem 0.8rem", borderRadius: "2px" }}>{t}</span>
                     ))}
                   </div>
                 )}
@@ -222,12 +241,12 @@ export default function DisplayPage() {
                       <QRImg url={dashboardUrl} size={148} dark="#111111" />
                     </div>
                     <span style={{ ...mono, fontSize: "0.85rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "#000", fontWeight: 600 }}>Or open</span>
-                    <p style={{ ...mono, fontSize: "0.9rem", color: "#000", textAlign: "center", lineHeight: 1.6, wordBreak: "break-all", maxWidth: "170px", fontWeight: 500 }}>{dashboardUrl}</p>
+                    <p style={{ ...mono, fontSize: "0.8rem", color: "#000", textAlign: "center", lineHeight: 1.6, maxWidth: "100%", fontWeight: 500 }}>{dashboardUrl.replace(/\/dashboard$/, "")}<wbr />/dashboard</p>
                   </div>
                 </div>
 
                 <div style={{ flex: 1, padding: "1rem 1.25rem", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                  <p style={{ ...mono, fontSize: "0.55rem", letterSpacing: "0.22em", textTransform: "uppercase", color: "#000", marginBottom: "0.5rem", fontWeight: 600 }}>Library stats</p>
+                  <p style={{ ...mono, fontSize: "0.75rem", letterSpacing: "0.22em", textTransform: "uppercase", color: "#000", marginBottom: "0.5rem", fontWeight: 600 }}>Library stats</p>
                   <StatRow value={stats?.visits ?? "—"} label="Total visits" />
                   <StatRow value={stats?.total ?? papers.length} label="Papers" />
                   <StatRow value={stats?.thisMonth ?? "—"} label="Added this month" />
@@ -236,36 +255,36 @@ export default function DisplayPage() {
               </div>
             </div>
           ) : (
-            <div style={{ textAlign: "center", ...mono, fontSize: "0.8rem", color: "#aaa" }}>Loading papers…</div>
+            <div style={{ textAlign: "center", ...mono, fontSize: "0.8rem", color: "#666" }}>Loading papers…</div>
           )}
         </div>
       </main>
 
-      {/* Footer — most read lives here in v2 */}
+      {/* Footer — recently added lives here in v2 */}
       <footer style={{ borderTop: "1px solid rgba(200,16,46,0.13)", flexShrink: 0 }}>
-        {/* Most read bar */}
-        {stats?.mostRead && (
+        {/* Recently added bar */}
+        {recent && (
           <div style={{ display: "flex", alignItems: "center", gap: "1rem", padding: "0.5rem 2.5rem", borderBottom: "1px solid rgba(200,16,46,0.08)", background: "#fdf5f5", minWidth: 0 }}>
-            <span style={{ ...mono, fontSize: "0.55rem", letterSpacing: "0.2em", textTransform: "uppercase", color: "#c8102e", fontWeight: 600, flexShrink: 0 }}>
-              Most read
+            <span style={{ ...mono, fontSize: "0.75rem", letterSpacing: "0.2em", textTransform: "uppercase", color: "#c8102e", fontWeight: 600, flexShrink: 0 }}>
+              Recently added
             </span>
             <div style={{ width: "1px", height: "12px", background: "rgba(200,16,46,0.2)", flexShrink: 0 }} />
             <span style={{ ...serif, fontSize: "0.82rem", color: "#333", fontStyle: "italic", overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis", flex: 1 }}>
-              {stats.mostRead.title}
+              {recent.title}
             </span>
-            {stats.mostRead.authors && stats.mostRead.authors.length > 0 && (
+            {recent.authors && recent.authors.length > 0 && (
               <>
                 <div style={{ width: "1px", height: "12px", background: "rgba(200,16,46,0.15)", flexShrink: 0 }} />
-                <span style={{ ...mono, fontSize: "0.58rem", color: "#000", overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis", maxWidth: "220px", flexShrink: 0 }}>
-                  {stats.mostRead.authors.slice(0, 3).join(", ")}{stats.mostRead.authors.length > 3 ? " …" : ""}
+                <span style={{ ...mono, fontSize: "0.75rem", color: "#000", overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis", maxWidth: "220px", flexShrink: 0 }}>
+                  {recent.authors.slice(0, 3).join(", ")}{recent.authors.length > 3 ? " …" : ""}
                 </span>
               </>
             )}
-            {stats.mostRead.year && (
+            {recent.year && (
               <>
                 <div style={{ width: "1px", height: "12px", background: "rgba(200,16,46,0.15)", flexShrink: 0 }} />
-                <span style={{ ...mono, fontSize: "0.58rem", color: "#c8102e", fontWeight: 600, flexShrink: 0 }}>
-                  {stats.mostRead.year}
+                <span style={{ ...mono, fontSize: "0.75rem", color: "#c8102e", fontWeight: 600, flexShrink: 0 }}>
+                  {recent.year}
                 </span>
               </>
             )}
@@ -275,15 +294,14 @@ export default function DisplayPage() {
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.75rem 2.5rem" }}>
           <div style={{ display: "flex", gap: "0.5rem" }}>
             {([["←", prev], ["→", next]] as [string, () => void][]).map(([label, fn], i) => (
-              <button key={i} onClick={fn} style={{ width: "34px", height: "34px", border: "1px solid rgba(200,16,46,0.3)", borderRadius: "2px", background: "none", color: "#555", cursor: "pointer", fontSize: "1rem", ...mono, display: "flex", alignItems: "center", justifyContent: "center" }}>{label}</button>
+              <button key={i} onClick={fn} aria-label={i === 0 ? "Previous paper" : "Next paper"} style={{ width: "44px", height: "44px", border: "1px solid rgba(200,16,46,0.3)", borderRadius: "2px", background: "none", color: "#555", cursor: "pointer", fontSize: "1rem", ...mono, display: "flex", alignItems: "center", justifyContent: "center" }}>{label}</button>
             ))}
           </div>
-          <div style={{ display: "flex", gap: "8px" }}>
-            {papers.map((_, i) => (
-              <button key={i} onClick={() => goTo(i)} style={{ width: "6px", height: "6px", borderRadius: "50%", background: i === current ? "#c8102e" : "#ddd", border: `1px solid ${i === current ? "#c8102e" : "#ccc"}`, transform: i === current ? "scale(1.35)" : "scale(1)", transition: "all 0.3s", cursor: "pointer", padding: 0 }} />
-            ))}
-          </div>
-          <span style={{ ...mono, fontSize: "0.6rem", color: "#aaa", letterSpacing: "0.1em" }}>
+          {/* Counter instead of one dot per paper: stays one line at any library size */}
+          <span style={{ ...mono, fontSize: "0.8rem", letterSpacing: "0.1em", color: "#555", fontVariantNumeric: "tabular-nums" }}>
+            <span style={{ color: "#c8102e", fontWeight: 700 }}>{String(current + 1).padStart(String(papers.length).length, "0")}</span> / {papers.length}
+          </span>
+          <span style={{ ...mono, fontSize: "0.75rem", color: "#666", letterSpacing: "0.1em" }}>
             {paused ? "paused" : `auto · ${ROTATE_MS / 1000}s`}
           </span>
         </div>

@@ -64,7 +64,7 @@ export default function AdminLoginPage() {
           <h1 style={{ ...serif, fontSize: "1.35rem", fontWeight: 700, color: "#111", marginBottom: "0.35rem", textAlign: "center" }}>
             Admin Access
           </h1>
-          <p style={{ ...mono, fontSize: "0.6rem", letterSpacing: "0.2em", textTransform: "uppercase", color: "#aaa", textAlign: "center" }}>
+          <p style={{ ...mono, fontSize: "0.75rem", letterSpacing: "0.2em", textTransform: "uppercase", color: "#666", textAlign: "center" }}>
             Paper Showcase
           </p>
         </div>
@@ -74,11 +74,13 @@ export default function AdminLoginPage() {
           <form onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
 
             <div>
-              <label style={{ ...mono, display: "block", fontSize: "0.58rem", letterSpacing: "0.18em", textTransform: "uppercase", color: "#888", marginBottom: "0.45rem", fontWeight: 500 }}>
+              <label htmlFor="password" style={{ ...mono, display: "block", fontSize: "0.75rem", letterSpacing: "0.18em", textTransform: "uppercase", color: "#666", marginBottom: "0.45rem", fontWeight: 500 }}>
                 Password
               </label>
               <input
+                id="password"
                 type="password"
+                autoComplete="current-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="enter password"
@@ -93,7 +95,7 @@ export default function AdminLoginPage() {
             </div>
 
             {error && (
-              <p style={{ ...mono, fontSize: "0.62rem", color: "#c8102e", letterSpacing: "0.04em" }}>
+              <p style={{ ...mono, fontSize: "0.75rem", color: "#c8102e", letterSpacing: "0.04em" }}>
                 {error}
               </p>
             )}
@@ -105,7 +107,7 @@ export default function AdminLoginPage() {
               onMouseLeave={() => setHover(false)}
               style={{
                 ...mono,
-                fontSize: "0.62rem",
+                fontSize: "0.75rem",
                 letterSpacing: "0.12em",
                 textTransform: "uppercase",
                 fontWeight: 500,
@@ -127,7 +129,7 @@ export default function AdminLoginPage() {
         {/* Divider line */}
         <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginTop: "1.5rem" }}>
           <div style={{ flex: 1, height: "1px", background: "rgba(200,16,46,0.1)" }} />
-          <span style={{ ...mono, fontSize: "0.55rem", color: "#ddd", letterSpacing: "0.12em", textTransform: "uppercase" }}>
+          <span style={{ ...mono, fontSize: "0.75rem", color: "#666", letterSpacing: "0.12em", textTransform: "uppercase" }}>
             restricted access
           </span>
           <div style={{ flex: 1, height: "1px", background: "rgba(200,16,46,0.1)" }} />

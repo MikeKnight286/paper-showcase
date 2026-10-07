@@ -3,10 +3,9 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Paper, DoiLookupResult } from "@/types";
+import { mono, serif } from "@/lib/fonts";
+import { matchesQuery } from "@/lib/search";
 
-const mono: React.CSSProperties = { fontFamily: "'Courier New', monospace" };
-const serif: React.CSSProperties = { fontFamily: "'Georgia', serif" };
-const display: React.CSSProperties = { fontFamily: "'Georgia', serif" };
 
 const inputStyle: React.CSSProperties = {
   ...mono,
@@ -27,10 +26,10 @@ const inputStyle: React.CSSProperties = {
 const labelStyle: React.CSSProperties = {
   ...mono,
   display: "block",
-  fontSize: "0.58rem",
+  fontSize: "0.75rem",
   letterSpacing: "0.18em",
   textTransform: "uppercase",
-  color: "#888",
+  color: "#666",
   marginBottom: "0.45rem",
   fontWeight: 500,
 };
@@ -53,7 +52,7 @@ function NavBtn({
   const [hover, setHover] = useState(false);
   const base: React.CSSProperties = {
     ...mono,
-    fontSize: "0.62rem",
+    fontSize: "0.75rem",
     letterSpacing: "0.12em",
     textTransform: "uppercase",
     fontWeight: 500,
@@ -73,7 +72,7 @@ function NavBtn({
     <button style={base} onClick={onClick} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
       {children}
       {badge != null && badge > 0 && (
-        <span style={{ background: "#c8102e", color: "#fff", borderRadius: "10px", padding: "0 5px", fontSize: "0.55rem", lineHeight: "1.6", fontWeight: 700 }}>
+        <span style={{ background: "#c8102e", color: "#fff", borderRadius: "10px", padding: "0 5px", fontSize: "0.75rem", lineHeight: "1.6", fontWeight: 700 }}>
           {badge}
         </span>
       )}
@@ -99,7 +98,7 @@ function ActionBtn({
   const isDanger  = variant === "danger";
   const base: React.CSSProperties = {
     ...mono,
-    fontSize: "0.62rem",
+    fontSize: "0.75rem",
     letterSpacing: "0.12em",
     textTransform: "uppercase",
     fontWeight: 500,
@@ -112,12 +111,12 @@ function ActionBtn({
       ? "1px solid #c8102e"
       : "1px solid rgba(200,16,46,0.3)",
     background: isPrimary
-      ? disabled ? "#e8a0a8" : hover ? "#9e0c23" : "#c8102e"
+      ? hover && !disabled ? "#9e0c23" : "#c8102e"
       : isDanger
       ? hover ? "#fdedf0" : "#fff"
       : hover ? "#fdedf0" : "transparent",
     color: isPrimary ? "#fff" : "#c8102e",
-    opacity: disabled && !isPrimary ? 0.5 : 1,
+    opacity: disabled ? 0.4 : 1,
     display: "inline-flex",
     alignItems: "center",
     gap: "0.5rem",
@@ -144,6 +143,7 @@ export default function AdminPage() {
   const [formSuccess, setFormSuccess] = useState(false);
   const [pendingCount, setPendingCount] = useState(0);
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
   const router = useRouter();
 
   useEffect(() => {
@@ -226,7 +226,7 @@ export default function AdminPage() {
     <div style={{ minHeight: "100vh", background: "#fff", borderTop: "4px solid #c8102e" }}>
 
       {/* Header */}
-      <header style={{ position: "sticky", top: 0, zIndex: 10, background: "#fff", borderBottom: "1px solid rgba(200,16,46,0.13)", padding: "1rem 2rem", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <header style={{ position: "sticky", top: 0, zIndex: 10, background: "#fff", borderBottom: "1px solid rgba(200,16,46,0.13)", padding: "1rem 1.25rem", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "0.75rem" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
           <div style={{ width: "28px", height: "28px", background: "#c8102e", borderRadius: "2px", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
             <svg width="14" height="14" viewBox="0 0 14 14" fill="white">
@@ -237,16 +237,16 @@ export default function AdminPage() {
             </svg>
           </div>
           <div>
-            <span style={{ ...mono, fontSize: "0.7rem", letterSpacing: "0.2em", textTransform: "uppercase", color: "#111", fontWeight: 500 }}>
+            <span style={{ ...mono, fontSize: "0.75rem", letterSpacing: "0.2em", textTransform: "uppercase", color: "#111", fontWeight: 500 }}>
               Admin Panel
             </span>
-            <p style={{ ...mono, fontSize: "0.58rem", color: "#aaa", letterSpacing: "0.08em", marginTop: "1px" }}>
+            <p style={{ ...mono, fontSize: "0.75rem", color: "#666", letterSpacing: "0.08em", marginTop: "1px" }}>
               {papers.length} paper{papers.length !== 1 ? "s" : ""} in library
             </p>
           </div>
         </div>
 
-        <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+        <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", flexWrap: "wrap" }}>
           <NavBtn onClick={() => router.push("/paperreading")} badge={pendingCount}>
             <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" strokeWidth="1.5">
               <rect x="1" y="1" width="9" height="9" rx="1" />
@@ -265,20 +265,22 @@ export default function AdminPage() {
         </div>
       </header>
 
-      <div style={{ maxWidth: "1060px", margin: "0 auto", padding: "2rem", display: "grid", gridTemplateColumns: "360px 1fr", gap: "2rem", alignItems: "start" }}>
+      <div className="admin-grid" style={{ maxWidth: "1060px", margin: "0 auto", padding: "2rem 1.25rem" }}>
 
         {/* ── Left: Add paper form ── */}
         <div style={{ border: "1px solid rgba(200,16,46,0.13)", borderTop: "3px solid #c8102e", borderRadius: "2px", background: "#fff", overflow: "hidden" }}>
 
           {/* DOI auto-fill section */}
           <div style={{ padding: "1.25rem 1.5rem", borderBottom: "1px solid rgba(200,16,46,0.1)", background: "#fffbfb" }}>
-            <p style={{ ...mono, fontSize: "0.58rem", letterSpacing: "0.22em", textTransform: "uppercase", color: "#c8102e", fontWeight: 500, marginBottom: "0.75rem" }}>
+            <p style={{ ...mono, fontSize: "0.75rem", letterSpacing: "0.22em", textTransform: "uppercase", color: "#c8102e", fontWeight: 500, marginBottom: "0.75rem" }}>
               Auto-fill via DOI
             </p>
             <div style={{ display: "flex", gap: "0.5rem" }}>
               <input
                 style={{ ...inputStyle, flex: 1, ...focused("doi-lookup") }}
-                placeholder="10.xxxx/... or doi.org/..."
+                placeholder="DOI, doi.org/... or arXiv ID/URL"
+                aria-label="DOI or arXiv ID"
+                autoFocus
                 value={doiInput}
                 onChange={(e) => { setDoiInput(e.target.value); setDoiError(null); }}
                 onKeyDown={(e) => e.key === "Enter" && lookupDoi()}
@@ -289,78 +291,81 @@ export default function AdminPage() {
                 {doiLoading ? "fetching…" : "fetch"}
               </ActionBtn>
             </div>
+            {!doiError && !doiFilled && (
+              <p style={{ ...mono, fontSize: "0.75rem", color: "#666", marginTop: "0.5rem", letterSpacing: "0.04em" }}>Press Enter to fetch. Journals (CrossRef) and arXiv/DataCite.</p>
+            )}
             {doiError && (
-              <p style={{ ...mono, fontSize: "0.6rem", color: "#c8102e", marginTop: "0.5rem", letterSpacing: "0.04em" }}>{doiError}</p>
+              <p style={{ ...mono, fontSize: "0.75rem", color: "#c8102e", marginTop: "0.5rem", letterSpacing: "0.04em" }}>{doiError}</p>
             )}
             {doiFilled && (
-              <p style={{ ...mono, fontSize: "0.6rem", color: "#15803d", marginTop: "0.5rem", letterSpacing: "0.04em" }}>
-                Fields populated from CrossRef. Add tags below, then save.
+              <p style={{ ...mono, fontSize: "0.75rem", color: "#15803d", marginTop: "0.5rem", letterSpacing: "0.04em" }}>
+                Fields filled in. Add tags below, then save.
               </p>
             )}
           </div>
 
           {/* Form fields */}
           <form onSubmit={handleAdd} style={{ padding: "1.25rem 1.5rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
-            <p style={{ ...mono, fontSize: "0.58rem", letterSpacing: "0.22em", textTransform: "uppercase", color: "#aaa", fontWeight: 500 }}>
+            <p style={{ ...mono, fontSize: "0.75rem", letterSpacing: "0.22em", textTransform: "uppercase", color: "#666", fontWeight: 500 }}>
               Paper details
             </p>
 
             <div>
-              <label style={labelStyle}>Title <span style={{ color: "#c8102e" }}>*</span></label>
-              <input style={{ ...inputStyle, ...focused("title") }} value={form.title} onChange={field("title")} placeholder="Full paper title"
+              <label htmlFor="f-title" style={labelStyle}>Title <span style={{ color: "#c8102e" }}>*</span></label>
+              <input style={{ ...inputStyle, ...focused("title") }} id="f-title" value={form.title} onChange={field("title")} placeholder="Full paper title"
                 onFocus={() => setFocusedInput("title")} onBlur={() => setFocusedInput(null)} />
             </div>
 
             <div>
-              <label style={labelStyle}>Authors <span style={{ color: "#c8102e" }}>*</span></label>
-              <input style={{ ...inputStyle, ...focused("authors") }} value={form.authors} onChange={field("authors")} placeholder="Author One, Author Two, …"
+              <label htmlFor="f-authors" style={labelStyle}>Authors <span style={{ color: "#c8102e" }}>*</span></label>
+              <input style={{ ...inputStyle, ...focused("authors") }} id="f-authors" value={form.authors} onChange={field("authors")} placeholder="Author One, Author Two, …"
                 onFocus={() => setFocusedInput("authors")} onBlur={() => setFocusedInput(null)} />
-              <p style={{ ...mono, fontSize: "0.56rem", color: "#ccc", marginTop: "0.3rem", letterSpacing: "0.06em" }}>Comma-separated</p>
+              <p style={{ ...mono, fontSize: "0.75rem", color: "#666", marginTop: "0.3rem", letterSpacing: "0.06em" }}>Comma-separated</p>
             </div>
 
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
               <div>
-                <label style={labelStyle}>Year <span style={{ color: "#c8102e" }}>*</span></label>
-                <input style={{ ...inputStyle, ...focused("year") }} type="number" min="1900" max="2099" value={form.year} onChange={field("year")} placeholder="2024"
+                <label htmlFor="f-year" style={labelStyle}>Year <span style={{ color: "#c8102e" }}>*</span></label>
+                <input style={{ ...inputStyle, ...focused("year") }} type="number" min="1900" max="2099" id="f-year" value={form.year} onChange={field("year")} placeholder="2024"
                   onFocus={() => setFocusedInput("year")} onBlur={() => setFocusedInput(null)} />
               </div>
               <div>
-                <label style={labelStyle}>DOI</label>
-                <input style={{ ...inputStyle, ...focused("doi") }} value={form.doi} onChange={field("doi")} placeholder="10.xxxx/…"
+                <label htmlFor="f-doi" style={labelStyle}>DOI</label>
+                <input style={{ ...inputStyle, ...focused("doi") }} id="f-doi" value={form.doi} onChange={field("doi")} placeholder="10.xxxx/…"
                   onFocus={() => setFocusedInput("doi")} onBlur={() => setFocusedInput(null)} />
               </div>
             </div>
 
             <div>
-              <label style={labelStyle}>Abstract</label>
+              <label htmlFor="f-abstract" style={labelStyle}>Abstract</label>
               <textarea
                 style={{ ...inputStyle, resize: "vertical", minHeight: "90px", lineHeight: 1.6, ...focused("abstract") }}
-                value={form.abstract} onChange={field("abstract")} placeholder="Abstract…"
+                id="f-abstract" value={form.abstract} onChange={field("abstract")} placeholder="Abstract…"
                 onFocus={() => setFocusedInput("abstract")} onBlur={() => setFocusedInput(null)}
               />
             </div>
 
             <div>
-              <label style={labelStyle}>
+              <label htmlFor="f-tags" style={labelStyle}>
                 Tags / Keywords{" "}
-                <span style={{ color: "#bbb", textTransform: "none", letterSpacing: 0, fontWeight: 400 }}>(enter manually)</span>
+                <span style={{ color: "#666", textTransform: "none", letterSpacing: 0, fontWeight: 400 }}>(enter manually)</span>
               </label>
-              <input style={{ ...inputStyle, ...focused("tags") }} value={form.tags} onChange={field("tags")} placeholder="deep learning, NLP, …"
+              <input style={{ ...inputStyle, ...focused("tags") }} id="f-tags" value={form.tags} onChange={field("tags")} placeholder="deep learning, NLP, …"
                 onFocus={() => setFocusedInput("tags")} onBlur={() => setFocusedInput(null)} />
-              <p style={{ ...mono, fontSize: "0.56rem", color: "#ccc", marginTop: "0.3rem", letterSpacing: "0.06em" }}>Comma-separated</p>
+              <p style={{ ...mono, fontSize: "0.75rem", color: "#666", marginTop: "0.3rem", letterSpacing: "0.06em" }}>Comma-separated</p>
             </div>
 
             <div>
-              <label style={labelStyle}>URL</label>
-              <input style={{ ...inputStyle, ...focused("url") }} type="url" value={form.url} onChange={field("url")} placeholder="https://arxiv.org/abs/…"
+              <label htmlFor="f-url" style={labelStyle}>URL</label>
+              <input style={{ ...inputStyle, ...focused("url") }} type="url" id="f-url" value={form.url} onChange={field("url")} placeholder="https://arxiv.org/abs/…"
                 onFocus={() => setFocusedInput("url")} onBlur={() => setFocusedInput(null)} />
             </div>
 
             {formError && (
-              <p style={{ ...mono, fontSize: "0.62rem", color: "#c8102e", letterSpacing: "0.04em" }}>{formError}</p>
+              <p style={{ ...mono, fontSize: "0.75rem", color: "#c8102e", letterSpacing: "0.04em" }}>{formError}</p>
             )}
             {formSuccess && (
-              <p style={{ ...mono, fontSize: "0.62rem", color: "#15803d", letterSpacing: "0.04em" }}>Paper added to library.</p>
+              <p style={{ ...mono, fontSize: "0.75rem", color: "#15803d", letterSpacing: "0.04em" }}>Paper added to library.</p>
             )}
 
             <ActionBtn disabled={submitting} style={{ justifyContent: "center", width: "100%" }}>
@@ -371,18 +376,26 @@ export default function AdminPage() {
 
         {/* ── Right: Library list ── */}
         <div>
-          <p style={{ ...mono, fontSize: "0.6rem", letterSpacing: "0.25em", textTransform: "uppercase", color: "#aaa", marginBottom: "1.25rem" }}>
+          <p style={{ ...mono, fontSize: "0.75rem", letterSpacing: "0.25em", textTransform: "uppercase", color: "#666", marginBottom: "1.25rem" }}>
             Library · {papers.length} paper{papers.length !== 1 ? "s" : ""}
           </p>
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search title, author, topic…"
+            aria-label="Search library"
+            style={{ ...inputStyle, fontSize: "0.9rem", padding: "0.6rem 0.8rem", marginBottom: "1rem" }}
+          />
 
           <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-            {papers.map((paper) => (
+            {papers.filter((p) => matchesQuery(p, query)).map((paper) => (
               <div key={paper.id} style={{ border: "1px solid rgba(200,16,46,0.13)", borderLeft: "3px solid rgba(200,16,46,0.25)", borderRadius: "2px", background: "#fff", display: "flex", alignItems: "flex-start", gap: "1rem", padding: "1rem 1.25rem" }}>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ ...mono, fontSize: "0.58rem", letterSpacing: "0.08em", color: "#c8102e", fontWeight: 500, marginBottom: "0.3rem" }}>
+                  <p style={{ ...mono, fontSize: "0.75rem", letterSpacing: "0.08em", color: "#c8102e", fontWeight: 500, marginBottom: "0.3rem" }}>
                     {paper.year}
                   </p>
-                  <h3 style={{ ...display, fontSize: "0.95rem", fontWeight: 700, lineHeight: 1.25, color: "#111", marginBottom: "0.3rem", overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const }}>
+                  <h3 style={{ ...serif, fontSize: "0.95rem", fontWeight: 700, lineHeight: 1.25, color: "#111", marginBottom: "0.3rem", overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const }}>
                     {paper.title}
                   </h3>
                   <p style={{ ...serif, fontSize: "0.8rem", color: "#666", fontStyle: "italic", lineHeight: 1.4, marginBottom: "0.5rem" }}>
@@ -391,7 +404,7 @@ export default function AdminPage() {
                   {paper.tags?.length > 0 && (
                     <div style={{ display: "flex", flexWrap: "wrap", gap: "0.35rem" }}>
                       {paper.tags.map((t) => (
-                        <span key={t} style={{ ...mono, fontSize: "0.55rem", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 500, padding: "0.18rem 0.55rem", borderRadius: "2px", background: "#fdedf0", color: "#9e0c23", border: "1px solid rgba(200,16,46,0.25)" }}>
+                        <span key={t} style={{ ...mono, fontSize: "0.75rem", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 500, padding: "0.18rem 0.55rem", borderRadius: "2px", background: "#fdedf0", color: "#9e0c23", border: "1px solid rgba(200,16,46,0.25)" }}>
                           {t}
                         </span>
                       ))}
@@ -404,9 +417,9 @@ export default function AdminPage() {
               </div>
             ))}
 
-            {papers.length === 0 && (
+            {papers.filter((p) => matchesQuery(p, query)).length === 0 && (
               <div style={{ textAlign: "center", padding: "4rem 0" }}>
-                <p style={{ ...mono, fontSize: "0.75rem", color: "#ccc", letterSpacing: "0.15em", textTransform: "uppercase" }}>No papers yet</p>
+                <p style={{ ...mono, fontSize: "0.75rem", color: "#666", letterSpacing: "0.15em", textTransform: "uppercase" }}>{papers.length === 0 ? "No papers yet" : "No papers match your search"}</p>
               </div>
             )}
           </div>

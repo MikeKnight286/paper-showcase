@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { writeFile } from 'fs/promises';
 import path from 'path';
 import fs from 'fs';
-import { v4 as uuidv4 } from 'uuid';
 import { getPendingPapers, savePendingPapers, getPendingFilePath } from '@/lib/db';
 import type { PendingPaper } from '@/types';
 
@@ -60,7 +59,7 @@ export async function POST(req: NextRequest) {
     const fallbackTitle = file.name.replace(/\.pdf$/i, '').replace(/[-_]/g, ' ') || 'Untitled submission';
 
     ensurePendingDir();
-    const id = uuidv4();
+    const id = crypto.randomUUID();
     const filename = `${id}.pdf`;
     await writeFile(getPendingFilePath(filename), bytes);
 

@@ -1,20 +1,11 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 :root {
   --font-display: 'Georgia', 'Times New Roman', serif;
   --font-body:    system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-mono:    'Courier New', 'Lucida Console', monospace;
 
-  --red-50:  #fff5f5;
-  --red-100: #ffe0e0;
-  --red-200: #ffb3b3;
-  --red-400: #f05252;
   --red-600: #c81e1e;
   --red-700: #a31515;
   --red-800: #7c0e0e;
-  --red-900: #560808;
 
   --white:    #ffffff;
   --gray-50:  #fafafa;
@@ -27,19 +18,29 @@
 
   --bg:           var(--white);
   --bg-subtle:    var(--gray-50);
-  --bg-muted:     var(--gray-100);
   --border:       var(--gray-200);
-  --text-primary: var(--black);
   --text-muted:   var(--gray-600);
   --text-faint:   var(--gray-400);
 }
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; border: 0 solid #e5e7eb; }
+/* The parts of Tailwind's preflight reset the inline-styled pages rely on */
+h1, h2, h3, h4, h5, h6 { font-size: inherit; font-weight: inherit; }
+a { color: inherit; text-decoration: inherit; }
+button, input, select, textarea { font: inherit; letter-spacing: inherit; color: inherit; }
+button { background-color: transparent; cursor: pointer; text-transform: none; }
+textarea { resize: vertical; }
+input::placeholder, textarea::placeholder { opacity: 1; color: #9ca3af; }
+ol, ul { list-style: none; }
+img, svg, canvas, video, iframe { display: block; vertical-align: middle; }
+img, video { max-width: 100%; height: auto; }
+table { border-collapse: collapse; }
+[hidden] { display: none; }
 html { font-size: 16px; }
 body {
   font-family: var(--font-body);
   background: var(--bg);
-  color: var(--text-primary);
+  color: var(--black);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
@@ -48,3 +49,22 @@ body {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--gray-400); }
+
+/* Keyboard focus must stay visible; !important beats inline `outline: none` */
+:focus-visible { outline: 2px solid #c8102e !important; outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+
+/* Dashboard paper card: actions beside the text, stacked under it on phones */
+.paper-row { display: flex; align-items: flex-start; gap: 1rem; }
+.paper-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 0.6rem; flex-shrink: 0; }
+@media (max-width: 600px) {
+  .paper-row { flex-direction: column; }
+  .paper-actions { flex-direction: row; align-items: center; }
+}
+
+/* Admin: form beside the library, stacked on narrow screens */
+.admin-grid { display: grid; grid-template-columns: 360px 1fr; gap: 2rem; align-items: start; }
+@media (max-width: 860px) { .admin-grid { grid-template-columns: 1fr; } }

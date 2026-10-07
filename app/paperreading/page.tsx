@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { v4 as uuidv4 } from "uuid";
+import { mono, serif } from "@/lib/fonts";
 
 interface PendingEntry {
   id: string;
@@ -18,9 +18,6 @@ interface PendingEntry {
   uploaderToken?: string;
 }
 
-const mono: React.CSSProperties = { fontFamily: "'Courier New', monospace" };
-const serif: React.CSSProperties = { fontFamily: "'Georgia', serif" };
-const display: React.CSSProperties = { fontFamily: "'Georgia', serif" };
 
 function timeAgo(iso: string): string {
   const diff = Date.now() - new Date(iso).getTime();
@@ -52,7 +49,7 @@ function buildUploaderLabels(queue: PendingEntry[]): Map<string, string> {
 function UploaderBadge({ label, isSelf }: { label: string; isSelf: boolean }) {
   return (
     <span style={{
-      ...mono, fontSize: "0.55rem", letterSpacing: "0.12em", textTransform: "uppercase",
+      ...mono, fontSize: "0.75rem", letterSpacing: "0.12em", textTransform: "uppercase",
       fontWeight: 500, padding: "0.18rem 0.6rem", borderRadius: "2px",
       background: isSelf ? "#c8102e" : "#f4f4f4",
       color: isSelf ? "#fff" : "#888",
@@ -68,10 +65,10 @@ function AdminActions({ id, onApprove, onReject, busy }: {
 }) {
   return (
     <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.75rem" }}>
-      <button disabled={busy} onClick={() => onApprove(id)} style={{ ...mono, fontSize: "0.58rem", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 500, padding: "0.32rem 0.9rem", borderRadius: "2px", cursor: busy ? "not-allowed" : "pointer", border: "1px solid #15803d", background: "#f0fdf4", color: "#15803d", opacity: busy ? 0.6 : 1 }}>
+      <button disabled={busy} onClick={() => onApprove(id)} style={{ ...mono, fontSize: "0.75rem", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 500, padding: "0.32rem 0.9rem", borderRadius: "2px", cursor: busy ? "not-allowed" : "pointer", border: "1px solid #15803d", background: "#f0fdf4", color: "#15803d", opacity: busy ? 0.6 : 1 }}>
         {busy ? "working…" : "approve ✓"}
       </button>
-      <button disabled={busy} onClick={() => onReject(id)} style={{ ...mono, fontSize: "0.58rem", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 500, padding: "0.32rem 0.9rem", borderRadius: "2px", cursor: busy ? "not-allowed" : "pointer", border: "1px solid rgba(200,16,46,0.4)", background: "#fff", color: "#c8102e", opacity: busy ? 0.6 : 1 }}>
+      <button disabled={busy} onClick={() => onReject(id)} style={{ ...mono, fontSize: "0.75rem", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 500, padding: "0.32rem 0.9rem", borderRadius: "2px", cursor: busy ? "not-allowed" : "pointer", border: "1px solid rgba(200,16,46,0.4)", background: "#fff", color: "#c8102e", opacity: busy ? 0.6 : 1 }}>
         reject ×
       </button>
     </div>
@@ -106,14 +103,14 @@ function UploadPanel({ myToken, onSuccess }: { myToken: string; onSuccess: () =>
 
   return (
     <div style={{ border: "1px solid rgba(200,16,46,0.2)", borderLeft: "3px solid #c8102e", borderRadius: "2px", padding: "1.25rem 1.5rem", background: "#fffbfb" }}>
-      <p style={{ ...mono, fontSize: "0.62rem", letterSpacing: "0.18em", textTransform: "uppercase", color: "#c8102e", fontWeight: 500, marginBottom: "0.75rem" }}>
+      <p style={{ ...mono, fontSize: "0.75rem", letterSpacing: "0.18em", textTransform: "uppercase", color: "#c8102e", fontWeight: 500, marginBottom: "0.75rem" }}>
         Submit a paper for discussion
       </p>
       <p style={{ ...serif, fontSize: "0.85rem", color: "#666", lineHeight: 1.6, marginBottom: "1rem" }}>
         Upload a PDF and it will appear in the queue below.
       </p>
       <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap" }}>
-        <label style={{ ...mono, fontSize: "0.6rem", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 500, padding: "0.4rem 1rem", borderRadius: "2px", cursor: "pointer", border: "1px solid rgba(200,16,46,0.3)", background: file ? "#fdedf0" : "#fff", color: file ? "#c8102e" : "#555", display: "inline-flex", alignItems: "center", gap: "0.5rem" }}>
+        <label style={{ ...mono, fontSize: "0.75rem", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 500, padding: "0.4rem 1rem", borderRadius: "2px", cursor: "pointer", border: "1px solid rgba(200,16,46,0.3)", background: file ? "#fdedf0" : "#fff", color: file ? "#c8102e" : "#555", display: "inline-flex", alignItems: "center", gap: "0.5rem" }}>
           <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" strokeWidth="1.5">
             <path d="M5.5 7.5V2.5M3 5l2.5-2.5L8 5" /><path d="M1.5 9.5h8" />
           </svg>
@@ -123,17 +120,17 @@ function UploadPanel({ myToken, onSuccess }: { myToken: string; onSuccess: () =>
         </label>
         {file && (
           <>
-            <span style={{ ...mono, fontSize: "0.58rem", color: "#aaa" }}>{(file.size / 1024 / 1024).toFixed(1)} MB</span>
-            <button onClick={handleSubmit} disabled={loading} style={{ ...mono, fontSize: "0.62rem", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 500, padding: "0.4rem 1.1rem", borderRadius: "2px", border: "1px solid #c8102e", background: loading ? "#fdedf0" : "#c8102e", color: loading ? "#c8102e" : "#fff", cursor: loading ? "not-allowed" : "pointer" }}>
+            <span style={{ ...mono, fontSize: "0.75rem", color: "#666" }}>{(file.size / 1024 / 1024).toFixed(1)} MB</span>
+            <button onClick={handleSubmit} disabled={loading} style={{ ...mono, fontSize: "0.75rem", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 500, padding: "0.4rem 1.1rem", borderRadius: "2px", border: "1px solid #c8102e", background: loading ? "#fdedf0" : "#c8102e", color: loading ? "#c8102e" : "#fff", cursor: loading ? "not-allowed" : "pointer" }}>
               {loading ? "uploading…" : "submit"}
             </button>
-            <button onClick={() => { setFile(null); if (inputRef.current) inputRef.current.value = ""; setError(null); }} style={{ ...mono, fontSize: "0.58rem", color: "#aaa", background: "none", border: "none", cursor: "pointer" }}>
+            <button onClick={() => { setFile(null); if (inputRef.current) inputRef.current.value = ""; setError(null); }} style={{ ...mono, fontSize: "0.75rem", color: "#666", background: "none", border: "none", cursor: "pointer" }}>
               clear
             </button>
           </>
         )}
       </div>
-      {error && <p style={{ ...mono, fontSize: "0.62rem", color: "#c8102e", marginTop: "0.6rem" }}>{error}</p>}
+      {error && <p style={{ ...mono, fontSize: "0.75rem", color: "#c8102e", marginTop: "0.6rem" }}>{error}</p>}
     </div>
   );
 }
@@ -165,7 +162,7 @@ export default function PaperReadingPage() {
   useEffect(() => {
     let tok = localStorage.getItem("uploaderToken");
     if (!tok || !/^[0-9a-f-]{36}$/i.test(tok)) {
-      tok = uuidv4();
+      tok = Array.from(crypto.getRandomValues(new Uint8Array(16)), b => b.toString(16).padStart(2, "0")).join(""); // randomUUID needs HTTPS; phones use http://<lan-ip>
       localStorage.setItem("uploaderToken", tok);
     }
     setMyToken(tok);
@@ -212,11 +209,11 @@ export default function PaperReadingPage() {
   return (
     <div style={{ minHeight: "100vh", background: "#fff", borderTop: "4px solid #c8102e" }}>
       {/* Header */}
-      <header style={{ position: "sticky", top: 0, zIndex: 10, background: "#fff", borderBottom: "1px solid rgba(200,16,46,0.13)", padding: "1rem 2rem", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-          <button onClick={() => router.push("/dashboard")} style={{ ...mono, fontSize: "0.6rem", letterSpacing: "0.12em", textTransform: "uppercase", color: "#aaa", background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.4rem" }}
+      <header style={{ position: "sticky", top: 0, zIndex: 10, background: "#fff", borderBottom: "1px solid rgba(200,16,46,0.13)", padding: "1rem 1.25rem", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "0.75rem" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap" }}>
+          <button onClick={() => router.push("/dashboard")} style={{ ...mono, whiteSpace: "nowrap", fontSize: "0.75rem", letterSpacing: "0.12em", textTransform: "uppercase", color: "#666", background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.4rem" }}
             onMouseEnter={(e) => { e.currentTarget.style.color = "#c8102e"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.color = "#aaa"; }}>
+            onMouseLeave={(e) => { e.currentTarget.style.color = "#666"; }}>
             ← dashboard
           </button>
           <span style={{ color: "rgba(200,16,46,0.3)", fontSize: "0.8rem" }}>|</span>
@@ -229,16 +226,16 @@ export default function PaperReadingPage() {
             </svg>
           </div>
           <div>
-            <span style={{ ...mono, fontSize: "0.7rem", letterSpacing: "0.2em", textTransform: "uppercase", color: "#111", fontWeight: 500 }}>
+            <span style={{ ...mono, fontSize: "0.75rem", letterSpacing: "0.2em", textTransform: "uppercase", color: "#111", fontWeight: 500 }}>
               Paper Reading Queue
             </span>
-            <p style={{ ...mono, fontSize: "0.58rem", color: "#aaa", letterSpacing: "0.08em", marginTop: "1px" }}>
+            <p style={{ ...mono, fontSize: "0.75rem", color: "#666", letterSpacing: "0.08em", marginTop: "1px" }}>
               {queue.length} submission{queue.length !== 1 ? "s" : ""} · {groups.length} uploader{groups.length !== 1 ? "s" : ""}
             </p>
           </div>
         </div>
         {isAdmin && (
-          <span style={{ ...mono, fontSize: "0.55rem", letterSpacing: "0.15em", textTransform: "uppercase", color: "#15803d", border: "1px solid #bbf7d0", background: "#f0fdf4", padding: "0.25rem 0.6rem", borderRadius: "2px" }}>
+          <span style={{ ...mono, fontSize: "0.75rem", letterSpacing: "0.15em", textTransform: "uppercase", color: "#15803d", border: "1px solid #bbf7d0", background: "#f0fdf4", padding: "0.25rem 0.6rem", borderRadius: "2px" }}>
             admin
           </span>
         )}
@@ -246,7 +243,7 @@ export default function PaperReadingPage() {
 
       <div style={{ maxWidth: "900px", margin: "0 auto", padding: "2rem" }}>
         {/* Flow indicator */}
-        <div style={{ ...mono, fontSize: "0.6rem", letterSpacing: "0.15em", textTransform: "uppercase", color: "#aaa", marginBottom: "1.5rem", display: "flex", alignItems: "center", gap: "1rem" }}>
+        <div style={{ ...mono, fontSize: "0.75rem", letterSpacing: "0.15em", textTransform: "uppercase", color: "#666", marginBottom: "1.5rem", display: "flex", alignItems: "center", gap: "1rem" }}>
           <span>Submit a PDF</span>
           <span style={{ color: "rgba(200,16,46,0.3)" }}>→</span>
           <span>Everyone views &amp; discusses</span>
@@ -267,7 +264,7 @@ export default function PaperReadingPage() {
             />
           )}
           {uploadSuccess && (
-            <p style={{ ...mono, fontSize: "0.62rem", color: "#15803d", letterSpacing: "0.08em", marginTop: "0.6rem" }}>
+            <p style={{ ...mono, fontSize: "0.75rem", color: "#15803d", letterSpacing: "0.08em", marginTop: "0.6rem" }}>
               Paper submitted. It now appears in the queue below.
             </p>
           )}
@@ -275,15 +272,15 @@ export default function PaperReadingPage() {
 
         {/* Queue — grouped by uploader */}
         {loading ? (
-          <p style={{ ...mono, fontSize: "0.7rem", color: "#ccc", letterSpacing: "0.1em", textAlign: "center", padding: "3rem 0" }}>Loading queue…</p>
+          <p style={{ ...mono, fontSize: "0.75rem", color: "#666", letterSpacing: "0.1em", textAlign: "center", padding: "3rem 0" }}>Loading queue…</p>
         ) : queue.length === 0 ? (
           <div style={{ textAlign: "center", padding: "4rem 0", borderTop: "1px solid rgba(200,16,46,0.1)" }}>
-            <p style={{ ...mono, fontSize: "0.75rem", color: "#ccc", letterSpacing: "0.15em", textTransform: "uppercase" }}>Queue is empty</p>
-            <p style={{ ...serif, fontSize: "0.88rem", color: "#bbb", marginTop: "0.5rem" }}>Be the first to submit a paper for discussion.</p>
+            <p style={{ ...mono, fontSize: "0.75rem", color: "#666", letterSpacing: "0.15em", textTransform: "uppercase" }}>Queue is empty</p>
+            <p style={{ ...serif, fontSize: "0.88rem", color: "#666", marginTop: "0.5rem" }}>Be the first to submit a paper for discussion.</p>
           </div>
         ) : (
           <div style={{ borderTop: "1px solid rgba(200,16,46,0.1)", paddingTop: "1.5rem" }}>
-            <p style={{ ...mono, fontSize: "0.6rem", letterSpacing: "0.15em", textTransform: "uppercase", color: "#aaa", marginBottom: "1.5rem" }}>
+            <p style={{ ...mono, fontSize: "0.75rem", letterSpacing: "0.15em", textTransform: "uppercase", color: "#666", marginBottom: "1.5rem" }}>
               {queue.length} paper{queue.length !== 1 ? "s" : ""} · newest first · grouped by uploader
             </p>
 
@@ -298,7 +295,7 @@ export default function PaperReadingPage() {
                     <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.75rem" }}>
                       <UploaderBadge label={label} isSelf={!!isSelf} />
                       <div style={{ flex: 1, height: "1px", background: "rgba(200,16,46,0.1)" }} />
-                      <span style={{ ...mono, fontSize: "0.55rem", color: "#ccc", letterSpacing: "0.08em" }}>
+                      <span style={{ ...mono, fontSize: "0.75rem", color: "#666", letterSpacing: "0.08em" }}>
                         {papers.length} paper{papers.length !== 1 ? "s" : ""}
                       </span>
                     </div>
@@ -317,14 +314,14 @@ export default function PaperReadingPage() {
                               <div style={{ flex: 1, minWidth: 0 }}>
                                 {/* Timestamp */}
                                 <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", marginBottom: "0.45rem" }}>
-                                  <span style={{ ...mono, fontSize: "0.55rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "#aaa" }}>{timeAgo(paper.submittedAt)}</span>
-                                  <span style={{ ...mono, fontSize: "0.55rem", color: "#ddd" }}>·</span>
-                                  <span style={{ ...mono, fontSize: "0.55rem", color: "#ddd" }}>{new Date(paper.submittedAt).toLocaleDateString()}</span>
+                                  <span style={{ ...mono, fontSize: "0.75rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "#666" }}>{timeAgo(paper.submittedAt)}</span>
+                                  <span style={{ ...mono, fontSize: "0.75rem", color: "#ddd" }}>·</span>
+                                  <span style={{ ...mono, fontSize: "0.75rem", color: "#666" }}>{new Date(paper.submittedAt).toLocaleDateString()}</span>
                                 </div>
 
                                 <h3 onClick={() => setExpandedId(expanded ? null : paper.id)}
-                                  style={{ ...display, fontSize: "1.05rem", fontWeight: 700, lineHeight: 1.25, color: "#111", marginBottom: "0.3rem", cursor: "pointer" }}>
-                                  {hasTitle ? paper.title : <span style={{ color: "#aaa", fontStyle: "italic" }}>Untitled submission</span>}
+                                  style={{ ...serif, fontSize: "1.05rem", fontWeight: 700, lineHeight: 1.25, color: "#111", marginBottom: "0.3rem", cursor: "pointer" }}>
+                                  {hasTitle ? paper.title : <span style={{ color: "#666", fontStyle: "italic" }}>Untitled submission</span>}
                                 </h3>
 
                                 {paper.authors?.length > 0 && (
@@ -333,17 +330,17 @@ export default function PaperReadingPage() {
                                   </p>
                                 )}
                                 {paper.year > 0 && (
-                                  <p style={{ ...mono, fontSize: "0.58rem", letterSpacing: "0.08em", color: "#c8102e", fontWeight: 500, marginBottom: "0.45rem" }}>{paper.year}</p>
+                                  <p style={{ ...mono, fontSize: "0.75rem", letterSpacing: "0.08em", color: "#c8102e", fontWeight: 500, marginBottom: "0.45rem" }}>{paper.year}</p>
                                 )}
                                 {paper.tags?.length > 0 && (
                                   <div style={{ display: "flex", flexWrap: "wrap", gap: "0.35rem", marginBottom: "0.45rem" }}>
                                     {paper.tags.map((t) => (
-                                      <span key={t} style={{ ...mono, fontSize: "0.55rem", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 500, padding: "0.18rem 0.55rem", borderRadius: "2px", background: "#fdedf0", color: "#9e0c23", border: "1px solid rgba(200,16,46,0.25)" }}>{t}</span>
+                                      <span key={t} style={{ ...mono, fontSize: "0.75rem", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 500, padding: "0.18rem 0.55rem", borderRadius: "2px", background: "#fdedf0", color: "#9e0c23", border: "1px solid rgba(200,16,46,0.25)" }}>{t}</span>
                                     ))}
                                   </div>
                                 )}
                                 {paper.submitterNote && (
-                                  <p style={{ ...serif, fontSize: "0.8rem", color: "#888", fontStyle: "italic", paddingLeft: "0.75rem", borderLeft: "2px solid rgba(200,16,46,0.2)", marginTop: "0.4rem" }}>
+                                  <p style={{ ...serif, fontSize: "0.8rem", color: "#666", fontStyle: "italic", paddingLeft: "0.75rem", borderLeft: "2px solid rgba(200,16,46,0.2)", marginTop: "0.4rem" }}>
                                     {paper.submitterNote}
                                   </p>
                                 )}
@@ -357,13 +354,13 @@ export default function PaperReadingPage() {
                                 {/* View PDF — available to everyone */}
                                 <button
                                   onClick={() => setViewingPdfId(showingPdf ? null : paper.id)}
-                                  style={{ ...mono, fontSize: "0.6rem", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 500, padding: "0.38rem 0.9rem", borderRadius: "2px", border: `1px solid ${showingPdf ? "#c8102e" : "rgba(200,16,46,0.3)"}`, background: showingPdf ? "#fdedf0" : "#fff", color: showingPdf ? "#c8102e" : "#555", cursor: "pointer", whiteSpace: "nowrap" }}>
+                                  style={{ ...mono, fontSize: "0.75rem", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 500, padding: "0.38rem 0.9rem", borderRadius: "2px", border: `1px solid ${showingPdf ? "#c8102e" : "rgba(200,16,46,0.3)"}`, background: showingPdf ? "#fdedf0" : "#fff", color: showingPdf ? "#c8102e" : "#555", cursor: "pointer", whiteSpace: "nowrap" }}>
                                   {showingPdf ? "hide pdf ▲" : "view pdf ▼"}
                                 </button>
 
                                 {paperLink && (
                                   <a href={paperLink} target="_blank" rel="noopener noreferrer"
-                                    style={{ ...mono, fontSize: "0.6rem", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 500, padding: "0.38rem 0.9rem", borderRadius: "2px", border: "1px solid #c8102e", background: "#c8102e", color: "#fff", textDecoration: "none", whiteSpace: "nowrap" }}
+                                    style={{ ...mono, fontSize: "0.75rem", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 500, padding: "0.38rem 0.9rem", borderRadius: "2px", border: "1px solid #c8102e", background: "#c8102e", color: "#fff", textDecoration: "none", whiteSpace: "nowrap" }}
                                     onMouseEnter={(e) => { e.currentTarget.style.background = "#9e0c23"; }}
                                     onMouseLeave={(e) => { e.currentTarget.style.background = "#c8102e"; }}>
                                     open link ↗
@@ -372,7 +369,7 @@ export default function PaperReadingPage() {
 
                                 {paper.abstract && (
                                   <button onClick={() => setExpandedId(expanded ? null : paper.id)}
-                                    style={{ ...mono, fontSize: "0.56rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "#aaa", background: "none", border: "none", cursor: "pointer", whiteSpace: "nowrap" }}>
+                                    style={{ ...mono, fontSize: "0.75rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "#666", background: "none", border: "none", cursor: "pointer", whiteSpace: "nowrap" }}>
                                     {expanded ? "hide abstract ▲" : "show abstract ▼"}
                                   </button>
                                 )}
