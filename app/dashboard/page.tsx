@@ -2,6 +2,8 @@
 
 import { useEffect, useState, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { mono, serif } from "@/lib/fonts";
+import { matchesQuery } from "@/lib/search";
 
 interface Paper {
   id: string;
@@ -16,9 +18,6 @@ interface Paper {
   doi?: string;
 }
 
-const mono: React.CSSProperties = { fontFamily: "'Courier New', monospace" };
-const serif: React.CSSProperties = { fontFamily: "'Georgia', serif" };
-const display: React.CSSProperties = { fontFamily: "'Georgia', serif" };
 
 function TagSelector({
   allTags,
@@ -63,8 +62,9 @@ function TagSelector({
       <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", flexWrap: "wrap" }}>
         <button
           onClick={() => setOpen((v) => !v)}
+          aria-expanded={open}
           style={{
-            ...mono, fontSize: "0.62rem", letterSpacing: "0.12em", textTransform: "uppercase",
+            ...mono, fontSize: "0.75rem", letterSpacing: "0.12em", textTransform: "uppercase",
             fontWeight: 500, padding: "0.4rem 0.9rem", borderRadius: "2px", cursor: "pointer",
             border: `1px solid ${open ? "#c8102e" : "rgba(200,16,46,0.3)"}`,
             background: open ? "#fdedf0" : "#fff",
@@ -79,18 +79,20 @@ function TagSelector({
           </svg>
           Filter topics
           {selectedTags.size > 0 && (
-            <span style={{ background: "#c8102e", color: "#fff", borderRadius: "10px", padding: "0 5px", fontSize: "0.55rem", lineHeight: "1.6", fontWeight: 700 }}>
+            <span style={{ background: "#c8102e", color: "#fff", borderRadius: "10px", padding: "0 5px", fontSize: "0.75rem", lineHeight: "1.6", fontWeight: 700 }}>
               {selectedTags.size}
             </span>
           )}
         </button>
 
         {selectedList.slice(0, 4).map((tag) => (
-          <span
+          <button
             key={tag}
+            type="button"
             onClick={() => onToggle(tag)}
+            aria-label={`Remove topic ${tag}`}
             style={{
-              ...mono, fontSize: "0.58rem", letterSpacing: "0.1em", textTransform: "uppercase",
+              ...mono, fontSize: "0.75rem", letterSpacing: "0.1em", textTransform: "uppercase",
               fontWeight: 500, padding: "0.28rem 0.6rem 0.28rem 0.5rem", borderRadius: "2px",
               background: "#c8102e", color: "#fff",
               border: "1px solid #c8102e", cursor: "pointer",
@@ -98,18 +100,18 @@ function TagSelector({
             }}
           >
             {tag}
-            <span style={{ opacity: 0.7, fontSize: "0.7rem", lineHeight: 1 }}>×</span>
-          </span>
+            <span aria-hidden style={{ opacity: 0.7, fontSize: "0.75rem", lineHeight: 1 }}>×</span>
+          </button>
         ))}
 
         {selectedList.length > 4 && (
-          <span onClick={() => setOpen(true)} style={{ ...mono, fontSize: "0.58rem", color: "#c8102e", cursor: "pointer", letterSpacing: "0.05em" }}>
+          <button type="button" onClick={() => setOpen(true)} style={{ ...mono, fontSize: "0.75rem", color: "#c8102e", cursor: "pointer", letterSpacing: "0.05em" }}>
             +{selectedList.length - 4} more
-          </span>
+          </button>
         )}
 
         {selectedTags.size > 0 && (
-          <button onClick={onClear} style={{ ...mono, fontSize: "0.58rem", color: "#aaa", background: "none", border: "none", cursor: "pointer", letterSpacing: "0.08em" }}>
+          <button onClick={onClear} style={{ ...mono, fontSize: "0.75rem", color: "#666", background: "none", border: "none", cursor: "pointer", letterSpacing: "0.08em" }}>
             clear all
           </button>
         )}
@@ -118,13 +120,13 @@ function TagSelector({
       {open && (
         <div style={{
           position: "absolute", top: "calc(100% + 8px)", left: 0,
-          width: "320px", background: "#fff",
+          width: "min(320px, calc(100vw - 2.5rem))", background: "#fff",
           border: "1px solid rgba(200,16,46,0.2)", borderRadius: "3px",
           boxShadow: "0 4px 24px rgba(0,0,0,0.09)", zIndex: 50,
           overflow: "hidden",
         }}>
           <div style={{ padding: "0.6rem 0.75rem", borderBottom: "1px solid rgba(200,16,46,0.1)", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#aaa" strokeWidth="1.5" style={{ flexShrink: 0 }}>
+            <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="#666" strokeWidth="1.5" style={{ flexShrink: 0 }}>
               <circle cx="4.5" cy="4.5" r="3.5" />
               <line x1="7.5" y1="7.5" x2="10" y2="10" />
             </svg>
@@ -133,16 +135,17 @@ function TagSelector({
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search topics…"
-              style={{ ...mono, fontSize: "0.72rem", border: "none", outline: "none", width: "100%", color: "#111", background: "transparent", letterSpacing: "0.04em" }}
+              aria-label="Search topics"
+              style={{ ...mono, fontSize: "0.75rem", border: "none", outline: "none", width: "100%", color: "#111", background: "transparent", letterSpacing: "0.04em" }}
             />
             {search && (
-              <button onClick={() => setSearch("")} style={{ background: "none", border: "none", cursor: "pointer", color: "#aaa", fontSize: "0.9rem", lineHeight: 1, padding: 0 }}>×</button>
+              <button onClick={() => setSearch("")} aria-label="Clear topic search" style={{ background: "none", border: "none", cursor: "pointer", color: "#666", fontSize: "0.9rem", lineHeight: 1, padding: 0 }}>×</button>
             )}
           </div>
 
           <div style={{ maxHeight: "280px", overflowY: "auto", padding: "0.5rem" }}>
             {filtered.length === 0 ? (
-              <p style={{ ...mono, fontSize: "0.62rem", color: "#ccc", textAlign: "center", padding: "1rem", letterSpacing: "0.1em" }}>No matches</p>
+              <p style={{ ...mono, fontSize: "0.75rem", color: "#666", textAlign: "center", padding: "1rem", letterSpacing: "0.1em" }}>No matches</p>
             ) : (
               <div style={{ display: "flex", flexWrap: "wrap", gap: "0.35rem" }}>
                 {filtered.map((tag) => {
@@ -152,7 +155,7 @@ function TagSelector({
                       key={tag}
                       onClick={() => onToggle(tag)}
                       style={{
-                        ...mono, fontSize: "0.6rem", letterSpacing: "0.1em", textTransform: "uppercase",
+                        ...mono, fontSize: "0.75rem", letterSpacing: "0.1em", textTransform: "uppercase",
                         fontWeight: 500, padding: "0.3rem 0.7rem", borderRadius: "2px", cursor: "pointer",
                         border: `1px solid ${active ? "#c8102e" : "rgba(200,16,46,0.2)"}`,
                         background: active ? "#c8102e" : "#fdf5f5",
@@ -160,7 +163,7 @@ function TagSelector({
                         transition: "all 0.1s",
                       }}
                     >
-                      {active && <span style={{ marginRight: "4px", fontSize: "0.65rem" }}>✓</span>}
+                      {active && <span style={{ marginRight: "4px", fontSize: "0.75rem" }}>✓</span>}
                       {tag}
                     </button>
                   );
@@ -170,11 +173,11 @@ function TagSelector({
           </div>
 
           <div style={{ padding: "0.5rem 0.75rem", borderTop: "1px solid rgba(200,16,46,0.08)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span style={{ ...mono, fontSize: "0.58rem", color: "#bbb", letterSpacing: "0.06em" }}>
+            <span style={{ ...mono, fontSize: "0.75rem", color: "#666", letterSpacing: "0.06em" }}>
               {filtered.length} of {allTags.length} topic{allTags.length !== 1 ? "s" : ""}
             </span>
             {selectedTags.size > 0 && (
-              <button onClick={onClear} style={{ ...mono, fontSize: "0.58rem", color: "#c8102e", background: "none", border: "none", cursor: "pointer", letterSpacing: "0.08em" }}>
+              <button onClick={onClear} style={{ ...mono, fontSize: "0.75rem", color: "#c8102e", background: "none", border: "none", cursor: "pointer", letterSpacing: "0.08em" }}>
                 clear all ({selectedTags.size})
               </button>
             )}
@@ -190,6 +193,7 @@ export default function DashboardPage() {
   const [selectedTags, setSelectedTags] = useState<Set<string>>(new Set());
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [pendingCount, setPendingCount] = useState(0);
+  const [query, setQuery] = useState("");
   const [sort, setSort] = useState<'default' | 'alpha' | 'year-asc' | 'year-desc'>('default');
   const router = useRouter();
 
@@ -208,11 +212,12 @@ export default function DashboardPage() {
 
   const filtered = useMemo(() => {
     let list = selectedTags.size === 0 ? papers : papers.filter((p) => p.tags?.some((t) => selectedTags.has(t)));
+    if (query.trim()) list = list.filter((p) => matchesQuery(p, query));
     if (sort === 'alpha')      list = [...list].sort((a, b) => a.title.localeCompare(b.title));
     if (sort === 'year-desc')  list = [...list].sort((a, b) => b.year - a.year);
     if (sort === 'year-asc')   list = [...list].sort((a, b) => a.year - b.year);
     return list;
-  }, [papers, selectedTags, sort]);
+  }, [papers, selectedTags, sort, query]);
 
   function trackRead(id: string) {
     // sendBeacon guarantees delivery even when the browser opens a new tab
@@ -231,7 +236,7 @@ export default function DashboardPage() {
   return (
     <div style={{ minHeight: "100vh", background: "#fff", borderTop: "4px solid #c8102e" }}>
       {/* Header */}
-      <header style={{ position: "sticky", top: 0, zIndex: 10, background: "#fff", borderBottom: "1px solid rgba(200,16,46,0.13)", padding: "1rem 2rem", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <header style={{ position: "sticky", top: 0, zIndex: 10, background: "#fff", borderBottom: "1px solid rgba(200,16,46,0.13)", padding: "1rem 1.25rem", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "0.75rem" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
           <div style={{ width: "28px", height: "28px", background: "#c8102e", borderRadius: "2px", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
             <svg width="14" height="14" viewBox="0 0 14 14" fill="white">
@@ -242,10 +247,10 @@ export default function DashboardPage() {
             </svg>
           </div>
           <div>
-            <span style={{ ...mono, fontSize: "0.7rem", letterSpacing: "0.2em", textTransform: "uppercase", color: "#111", fontWeight: 500 }}>
+            <span style={{ ...mono, fontSize: "0.75rem", letterSpacing: "0.2em", textTransform: "uppercase", color: "#111", fontWeight: 500 }}>
               Paper Dashboard
             </span>
-            <p style={{ ...mono, fontSize: "0.58rem", color: "#aaa", letterSpacing: "0.08em", marginTop: "1px" }}>
+            <p style={{ ...mono, fontSize: "0.75rem", color: "#666", letterSpacing: "0.08em", marginTop: "1px" }}>
               {papers.length} paper{papers.length !== 1 ? "s" : ""}
             </p>
           </div>
@@ -255,11 +260,11 @@ export default function DashboardPage() {
         <button
           onClick={() => router.push("/paperreading")}
           style={{
-            ...mono, fontSize: "0.62rem", letterSpacing: "0.12em", textTransform: "uppercase",
+            ...mono, fontSize: "0.75rem", letterSpacing: "0.12em", textTransform: "uppercase",
             fontWeight: 500, padding: "0.4rem 1rem", borderRadius: "2px", cursor: "pointer",
             border: "1px solid rgba(200,16,46,0.3)",
             background: "#fff", color: "#555",
-            display: "flex", alignItems: "center", gap: "0.5rem",
+            display: "flex", alignItems: "center", gap: "0.5rem", whiteSpace: "nowrap",
             transition: "all 0.15s", position: "relative",
           }}
           onMouseEnter={(e) => { e.currentTarget.style.borderColor = "#c8102e"; e.currentTarget.style.color = "#c8102e"; e.currentTarget.style.background = "#fdedf0"; }}
@@ -271,11 +276,11 @@ export default function DashboardPage() {
             <line x1="3" y1="5.5" x2="6" y2="5.5" />
             <line x1="3" y1="7.5" x2="7" y2="7.5" />
           </svg>
-          Paper reading queue
+          Reading queue
           {pendingCount > 0 && (
             <span style={{
               background: "#c8102e", color: "#fff", borderRadius: "10px",
-              padding: "0 5px", fontSize: "0.55rem", lineHeight: "1.6", fontWeight: 700,
+              padding: "0 5px", fontSize: "0.75rem", lineHeight: "1.6", fontWeight: 700,
             }}>
               {pendingCount}
             </span>
@@ -283,12 +288,22 @@ export default function DashboardPage() {
         </button>
       </header>
 
-      <div style={{ maxWidth: "900px", margin: "0 auto", padding: "2rem" }}>
+      <div style={{ maxWidth: "900px", margin: "0 auto", padding: "1.5rem 1.25rem" }}>
+        {/* Search */}
+        <input
+          type="search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search title, author, topic…"
+          aria-label="Search papers"
+          style={{ ...mono, width: "100%", fontSize: "1rem", padding: "0.7rem 0.9rem", marginBottom: "1.25rem", border: "1px solid rgba(200,16,46,0.3)", borderRadius: "2px", background: "#fff", color: "#111" }}
+        />
+
         {/* Sort controls */}
-        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1.25rem" }}>
-          <span style={{ ...mono, fontSize: "0.58rem", letterSpacing: "0.18em", textTransform: "uppercase", color: "#aaa" }}>Sort</span>
-          {([ ['default', 'Recent'], ['alpha', 'A – Z'], ['year-desc', 'Newest'], ['year-asc', 'Oldest'] ] as const).map(([val, label]) => (
-            <button key={val} onClick={() => setSort(val)} style={{ ...mono, fontSize: "0.6rem", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 500, padding: "0.3rem 0.8rem", borderRadius: "2px", cursor: "pointer", border: `1px solid ${sort === val ? "#c8102e" : "rgba(200,16,46,0.25)"}`, background: sort === val ? "#c8102e" : "#fff", color: sort === val ? "#fff" : "#777", transition: "all 0.15s" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1.25rem", flexWrap: "wrap" }}>
+          <span style={{ ...mono, fontSize: "0.75rem", letterSpacing: "0.18em", textTransform: "uppercase", color: "#666" }}>Sort</span>
+          {([ ['default', 'Recent'], ['alpha', 'A–Z'], ['year-desc', 'Newest'], ['year-asc', 'Oldest'] ] as const).map(([val, label]) => (
+            <button key={val} onClick={() => setSort(val)} aria-pressed={sort === val} style={{ ...mono, fontSize: "0.75rem", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 500, padding: "0.45rem 0.8rem", whiteSpace: "nowrap", borderRadius: "2px", cursor: "pointer", border: `1px solid ${sort === val ? "#c8102e" : "rgba(200,16,46,0.25)"}`, background: sort === val ? "#c8102e" : "#fff", color: sort === val ? "#fff" : "#777", transition: "all 0.15s" }}>
               {label}
             </button>
           ))}
@@ -296,7 +311,7 @@ export default function DashboardPage() {
 
         {allTags.length > 0 && (
           <div style={{ marginBottom: "1.75rem" }}>
-            <p style={{ ...mono, fontSize: "0.6rem", letterSpacing: "0.25em", textTransform: "uppercase", color: "#aaa", marginBottom: "0.75rem" }}>
+            <p style={{ ...mono, fontSize: "0.75rem", letterSpacing: "0.25em", textTransform: "uppercase", color: "#666", marginBottom: "0.75rem" }}>
               Filter by topic
             </p>
             <TagSelector
@@ -308,8 +323,8 @@ export default function DashboardPage() {
           </div>
         )}
 
-        <p style={{ ...mono, fontSize: "0.6rem", letterSpacing: "0.15em", textTransform: "uppercase", color: "#aaa", marginBottom: "1.25rem" }}>
-          {filtered.length} paper{filtered.length !== 1 ? "s" : ""}{selectedTags.size > 0 ? " matching selected topics" : ""}
+        <p style={{ ...mono, fontSize: "0.75rem", letterSpacing: "0.15em", textTransform: "uppercase", color: "#666", marginBottom: "1.25rem" }}>
+          {filtered.length} paper{filtered.length !== 1 ? "s" : ""}{selectedTags.size > 0 || query.trim() ? " match" : ""}
         </p>
 
         <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
@@ -318,27 +333,29 @@ export default function DashboardPage() {
             const paperLink = paper.url || paper.link || (paper.doi ? `https://doi.org/${paper.doi}` : "");
             return (
               <div key={paper.id} style={{ border: "1px solid rgba(200,16,46,0.13)", borderLeft: "3px solid rgba(200,16,46,0.25)", borderRadius: "2px", background: "#fff", overflow: "hidden" }}>
-                <div style={{ display: "flex", alignItems: "flex-start", gap: "1rem", padding: "1.25rem 1.5rem" }}>
+                <div className="paper-row" style={{ padding: "1.25rem 1.5rem" }}>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <h3
                       onClick={() => setExpandedId(expanded ? null : paper.id)}
-                      style={{ ...display, fontSize: "1.15rem", fontWeight: 700, lineHeight: 1.25, color: "#111", marginBottom: "0.4rem", cursor: "pointer" }}
+                      style={{ ...serif, fontSize: "1.15rem", fontWeight: 700, lineHeight: 1.25, color: "#111", marginBottom: "0.4rem", cursor: "pointer" }}
                     >
                       {paper.title}
                     </h3>
                     <p style={{ ...serif, fontSize: "0.88rem", color: "#555", fontStyle: "italic", marginBottom: "0.3rem", lineHeight: 1.4 }}>
                       {paper.authors?.join(", ")}
                     </p>
-                    <p style={{ ...mono, fontSize: "0.6rem", letterSpacing: "0.08em", color: "#c8102e", fontWeight: 500, marginBottom: "0.6rem" }}>
+                    <p style={{ ...mono, fontSize: "0.75rem", letterSpacing: "0.08em", color: "#c8102e", fontWeight: 500, marginBottom: "0.6rem" }}>
                       {[paper.venue, paper.year].filter(Boolean).join(" · ")}
                     </p>
                     <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem" }}>
                       {paper.tags?.map((t) => (
-                        <span
+                        <button
                           key={t}
+                          type="button"
                           onClick={() => toggleTag(t)}
+                          aria-pressed={selectedTags.has(t)}
                           style={{
-                            ...mono, fontSize: "0.58rem", letterSpacing: "0.1em", textTransform: "uppercase",
+                            ...mono, fontSize: "0.75rem", letterSpacing: "0.1em", textTransform: "uppercase",
                             fontWeight: 500, padding: "0.2rem 0.6rem", borderRadius: "2px",
                             background: selectedTags.has(t) ? "#c8102e" : "#fdedf0",
                             color: selectedTags.has(t) ? "#fff" : "#9e0c23",
@@ -347,19 +364,19 @@ export default function DashboardPage() {
                           }}
                         >
                           {t}
-                        </span>
+                        </button>
                       ))}
                     </div>
                   </div>
 
-                  <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "0.6rem", flexShrink: 0 }}>
+                  <div className="paper-actions">
                     {paperLink && (
                       <a
                         href={paperLink}
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={() => trackRead(paper.id)}
-                        style={{ ...mono, fontSize: "0.62rem", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 500, padding: "0.4rem 1rem", borderRadius: "2px", border: "1px solid #c8102e", background: "#c8102e", color: "#fff", textDecoration: "none", whiteSpace: "nowrap" }}
+                        style={{ ...mono, fontSize: "0.75rem", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 500, padding: "0.4rem 1rem", borderRadius: "2px", border: "1px solid #c8102e", background: "#c8102e", color: "#fff", textDecoration: "none", whiteSpace: "nowrap" }}
                         onMouseEnter={(e) => { e.currentTarget.style.background = "#9e0c23"; e.currentTarget.style.borderColor = "#9e0c23"; }}
                         onMouseLeave={(e) => { e.currentTarget.style.background = "#c8102e"; e.currentTarget.style.borderColor = "#c8102e"; }}
                       >
@@ -368,7 +385,7 @@ export default function DashboardPage() {
                     )}
                     <button
                       onClick={() => setExpandedId(expanded ? null : paper.id)}
-                      style={{ ...mono, fontSize: "0.58rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "#aaa", background: "none", border: "none", cursor: "pointer", whiteSpace: "nowrap" }}
+                      style={{ ...mono, fontSize: "0.75rem", letterSpacing: "0.1em", textTransform: "uppercase", color: "#666", background: "none", border: "none", cursor: "pointer", whiteSpace: "nowrap" }}
                     >
                       {expanded ? "hide abstract ▲" : "show abstract ▼"}
                     </button>
@@ -388,8 +405,8 @@ export default function DashboardPage() {
 
           {filtered.length === 0 && (
             <div style={{ textAlign: "center", padding: "4rem 0" }}>
-              <p style={{ ...mono, fontSize: "0.75rem", color: "#ccc", letterSpacing: "0.15em", textTransform: "uppercase" }}>
-                No papers match the selected topics
+              <p style={{ ...mono, fontSize: "0.75rem", color: "#666", letterSpacing: "0.15em", textTransform: "uppercase" }}>
+                No papers match your search or topics
               </p>
             </div>
           )}

@@ -38,14 +38,10 @@ export async function GET(req: NextRequest) {
     return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
   }).length;
 
-  const topEntry = Object.entries(s.reads).sort((a, b) => b[1] - a[1])[0];
-  const topPaper = topEntry ? papers.find(p => p.id === topEntry[0]) : null;
-
   return NextResponse.json({
     visits:   s.visits,
     total:    papers.length,
     thisMonth,
-    mostRead: topPaper ? { title: topPaper.title, count: topEntry![1], authors: topPaper.authors, year: topPaper.year } : null,
   });
 }
 
