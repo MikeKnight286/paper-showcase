@@ -1,5 +1,48 @@
 [
   {
+    "title": "A self-correcting Agentic Graph RAG for clinical decision support in hepatology",
+    "authors": [
+      "Yalan Hu",
+      "Wenjie Xuan",
+      "Qingqing Zhou",
+      "Zhi Li",
+      "Ya Li",
+      "Jili Hu",
+      "Fang Fang"
+    ],
+    "year": 2025,
+    "abstract": "Clinical decision-making in hepatology is currently challenged by the rapid expansion of medical knowledge and the limitations of Large Language Models (LLMs), specifically their unreliability and tendency to hallucinate. Furthermore, standard Retrieval-Augmented Generation (RAG) paradigms often fail to effectively leverage complex medical knowledge structures. To address these issues, we propose an Agentic Graph RAG framework built upon a clinically-verified hepatology knowledge graph. Our approach utilizes a state-driven agentic system employing a self-correcting “retrieve-evaluate-refine” loop. Within this workflow, agents dynamically generate, semantically validate, assess, and iteratively optimize graph search strategies to construct a comprehensive and accurate context, which is then used by an LLM to generate reliable responses. The framework was evaluated on a custom dataset of clinical questions. It significantly outperformed baseline models (including GPT-4, standard RAG, and Graph RAG) across all evaluation metrics. Specifically, our model achieved superior scores in faithfulness (0.94), context recall (0.92), and answer relevancy (0.91). This agentic approach effectively mitigates LLM hallucinations and provides accurate, interpretable answers. These findings demonstrate the framework's potential as a robust, next-generation intelligent clinical decision support tool for hepatology.",
+    "tags": [
+      "LLM",
+      "Agentic RAG",
+      "Knowledge Graph"
+    ],
+    "doi": "10.3389/fmed.2025.1716327",
+    "url": "https://doi.org/10.3389/fmed.2025.1716327",
+    "id": "51455073-4c47-4275-aa21-21c3d01a0492",
+    "addedAt": "2026-10-13T06:10:04.861Z"
+  },
+  {
+    "title": "A deep reinforcement learning model for dynamic job-shop scheduling problem with uncertain processing time",
+    "authors": [
+      "Xinquan Wu",
+      "Xuefeng Yan",
+      "Donghai Guan",
+      "Mingqiang Wei"
+    ],
+    "year": 2024,
+    "abstract": "The dynamic job-shop scheduling problem (DJSP) is a type of scheduling tasks where rescheduling is performed when encountering the uncertainties such as the uncertain operation processing time. However, the current deep reinforcement learning (DRL) scheduling approaches are hard to train convergent scheduling policies as the problem scale increases, which is very important for rescheduling under uncertainty. In this paper, we propose a DRL scheduling method for DJSP based on the proximal policy optimization (PPO) with hybrid prioritized experience replay. The job shop scheduling problem is formulated as a sequential decision-making problem based on Markov Decision Process (MDP) where a novel state representation is designed based on the feasible solution matrix which depicts the scheduling order of a scheduling task, a set of paired priority dispatching rules (PDR) are used as the actions and a new intuitive reward function is established based on the machine idle time. Moreover, a new hybrid prioritized experience replay method for PPO is proposed to reduce the training time where samples with positive temporal-difference (TD) error are replayed. Static experiments on classic benchmark instances show that the make-span obtained by our scheduling agent has been reduced by 1.59% on average than the best known DRL methods. In addition, dynamic experiments demonstrate that the training time of the reused scheduling policy is reduced by 27% compared with the retrained policy when encountering uncertainties such as uncertain operation processing time.",
+    "tags": [
+      "Dynamic Job-shop Scheduling",
+      "Deep Reinforcement Learning",
+      "PPO"
+    ],
+    "doi": "10.1016/j.engappai.2023.107790",
+    "url": "https://doi.org/10.1016/j.engappai.2023.107790",
+    "id": "f21c37b6-aece-40e5-9d92-a68f4edbd2c1",
+    "addedAt": "2026-10-13T06:07:30.731Z"
+  },
+  {
     "title": "Hierarchical Concept Geometry in Language Models Emerges from Word Co-occurrence",
     "authors": [
       "Andres Nava",

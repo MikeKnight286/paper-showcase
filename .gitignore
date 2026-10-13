@@ -24,6 +24,7 @@
 /data/pending
 /data/pending.json
 /data/stats.json
+/data/papers.json
 /public
 
 # misc
@@ -48,3 +49,4 @@ next-env.d.ts
 
 AGENTS.md
 CLAUDE.md
+
