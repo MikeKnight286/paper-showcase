@@ -35,3 +35,19 @@ export async function DELETE(req: NextRequest) {
   savePapers(papers);
   return NextResponse.json({ ok: true });
 }
+
+export async function PATCH(req: NextRequest) {
+  if (!isAdmin(req)) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  }
+  const { id, tags } = await req.json();
+  if (!Array.isArray(tags) || !tags.every(t => typeof t === 'string')) {
+    return NextResponse.json({ error: 'tags must be string[]' }, { status: 400 });
+  }
+  const papers = getPapers();
+  const paper = papers.find(p => p.id === id);
+  if (!paper) return NextResponse.json({ error: 'Not found' }, { status: 404 });
+  paper.tags = tags.map(t => t.trim()).filter(Boolean);
+  savePapers(papers);
+  return NextResponse.json(paper);
+}
