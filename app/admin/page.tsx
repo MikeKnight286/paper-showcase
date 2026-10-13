@@ -144,6 +144,8 @@ export default function AdminPage() {
   const [pendingCount, setPendingCount] = useState(0);
   const [focusedInput, setFocusedInput] = useState<string | null>(null);
   const [query, setQuery] = useState("");
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [tagDraft, setTagDraft] = useState("");
   const router = useRouter();
 
   useEffect(() => {
@@ -215,6 +217,14 @@ export default function AdminPage() {
     if (!confirm("Remove this paper from the library?")) return;
     await fetch("/api/papers", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) });
     setPapers((p) => p.filter((x) => x.id !== id));
+  }
+
+  async function saveTags(id: string, raw: string) {
+    const tags = raw.split(",").map((t) => t.trim()).filter(Boolean);
+    const res = await fetch("/api/papers", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, tags }) });
+    if (!res.ok) { alert("Failed to save tags."); return; }
+    setPapers((p) => p.map((x) => (x.id === id ? { ...x, tags } : x)));
+    setEditingId(null);
   }
 
   async function handleLogout() {
@@ -401,7 +411,17 @@ export default function AdminPage() {
                   <p style={{ ...serif, fontSize: "0.8rem", color: "#666", fontStyle: "italic", lineHeight: 1.4, marginBottom: "0.5rem" }}>
                     {paper.authors.slice(0, 3).join(", ")}{paper.authors.length > 3 ? " …" : ""}
                   </p>
-                  {paper.tags?.length > 0 && (
+                  {editingId === paper.id ? (
+                    <input
+                      autoFocus
+                      style={inputStyle}
+                      aria-label="Edit tags"
+                      value={tagDraft}
+                      placeholder="comma, separated, tags"
+                      onChange={(e) => setTagDraft(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === "Enter") saveTags(paper.id, tagDraft); if (e.key === "Escape") setEditingId(null); }}
+                    />
+                  ) : paper.tags?.length > 0 && (
                     <div style={{ display: "flex", flexWrap: "wrap", gap: "0.35rem" }}>
                       {paper.tags.map((t) => (
                         <span key={t} style={{ ...mono, fontSize: "0.75rem", letterSpacing: "0.1em", textTransform: "uppercase", fontWeight: 500, padding: "0.18rem 0.55rem", borderRadius: "2px", background: "#fdedf0", color: "#9e0c23", border: "1px solid rgba(200,16,46,0.25)" }}>
@@ -411,9 +431,19 @@ export default function AdminPage() {
                     </div>
                   )}
                 </div>
-                <ActionBtn variant="danger" onClick={() => handleDelete(paper.id)} style={{ flexShrink: 0, padding: "0.32rem 0.75rem" }}>
-                  remove
-                </ActionBtn>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem", flexShrink: 0 }}>
+                  {editingId === paper.id ? (
+                    <>
+                      <ActionBtn onClick={() => saveTags(paper.id, tagDraft)} style={{ padding: "0.32rem 0.75rem" }}>save</ActionBtn>
+                      <ActionBtn variant="ghost" onClick={() => setEditingId(null)} style={{ padding: "0.32rem 0.75rem" }}>cancel</ActionBtn>
+                    </>
+                  ) : (
+                    <ActionBtn variant="ghost" onClick={() => { setEditingId(paper.id); setTagDraft(paper.tags.join(", ")); }} style={{ padding: "0.32rem 0.75rem" }}>edit tags</ActionBtn>
+                  )}
+                  <ActionBtn variant="danger" onClick={() => handleDelete(paper.id)} style={{ padding: "0.32rem 0.75rem" }}>
+                    remove
+                  </ActionBtn>
+                </div>
               </div>
             ))}
 
